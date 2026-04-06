@@ -13,6 +13,9 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { StockStore } from "@/store/StockStore";
 import { SaleDB, ExpenseDB, IncomeDB, getCurrentBusinessId } from "@/database/db";
+import { generateMonthlyAnalysis } from "@/database/intelligence";
+import { MonthlyInsights } from "@/components/MonthlyInsights";
+import { MonthlyAnalysis } from "@/types";
 
 const MONTHS = [
   "January",
@@ -50,6 +53,7 @@ export default function ReportsScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [businessId, setBusinessId] = useState<string>("");
+  const [monthlyAnalysis, setMonthlyAnalysis] = useState<MonthlyAnalysis | null>(null);
 
   useEffect(() => {
     const loadBiz = async () => {
@@ -92,6 +96,11 @@ export default function ReportsScreen() {
     // Top products
     const tops = await StockStore.getTopProducts(selectedYear, selectedMonth + 1);
     setTopProducts(tops || []);
+
+    // Generate monthly business analysis
+    const analysis = await generateMonthlyAnalysis(businessId, selectedYear, selectedMonth + 1);
+    setMonthlyAnalysis(analysis);
+
     setIsLoading(false);
   }, [selectedYear, selectedMonth, businessId]);
 
@@ -320,6 +329,11 @@ export default function ReportsScreen() {
                 </Text>
               </View>
             </View>
+
+            {/* Monthly Business Analysis */}
+            {monthlyAnalysis && (
+              <MonthlyInsights analysis={monthlyAnalysis} />
+            )}
 
             {/* Sales Stats */}
             <View style={styles.section}>

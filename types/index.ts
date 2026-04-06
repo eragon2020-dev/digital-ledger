@@ -79,3 +79,37 @@ export interface PaginationOptions {
   toDate?: Date;
   searchQuery?: string; // Server-side search
 }
+
+// Monthly Business Analysis types
+export type InsightType = 'performance' | 'topProduct' | 'deadStock' | 'marginCrash' | 'lowSeller' | 'expenseAnomaly' | 'forecast' | 'action';
+export type InsightPriority = 'success' | 'info' | 'warning' | 'danger';
+
+export interface BusinessInsight {
+  type: InsightType;
+  priority: InsightPriority;
+  title: string;
+  detail: string;
+  suggestion?: string;
+  data?: Record<string, any>;
+}
+
+export interface ActionItem {
+  id: string;
+  priority: number; // 0-100, higher = more urgent
+  type: 'reorder' | 'follow-up' | 'price-review' | 'clearance' | 'promotion';
+  title: string;
+  detail: string;
+  suggestion: string;
+}
+
+export interface MonthlyAnalysis {
+  month: string;
+  year: number;
+  insights: BusinessInsight[];
+  actions: ActionItem[];
+  summary: string;
+  revenueGrowthPct: number;
+  projectedRevenue: { low: number; high: number };
+  capitalProjection: number;
+  status: 'green' | 'yellow' | 'red';
+}
