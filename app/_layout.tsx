@@ -1,9 +1,11 @@
+import { useEffect, useState } from 'react';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, Redirect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { View, Text } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-reanimated';
 import 'react-native-gesture-handler';
 
@@ -28,6 +30,15 @@ function SafeAreaWrapper({ children }: { children: React.ReactNode }) {
 function AppContent() {
   const { isReady, error } = useDatabase();
   const fontLoaded = useFarumaFont();
+  const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (isReady && fontLoaded) {
+      AsyncStorage.getItem('hasSeenOnboarding').then((value) => {
+        setHasSeenOnboarding(value === 'true');
+      });
+    }
+  }, [isReady, fontLoaded]);
 
   const lightTheme = {
     ...DefaultTheme,
@@ -41,7 +52,8 @@ function AppContent() {
     },
   };
 
-  if (!isReady || !fontLoaded) {
+  // Still loading onboarding state
+  if (!isReady || !fontLoaded || hasSeenOnboarding === null) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F8FAFC' }}>
         <Text style={{ marginTop: 16, fontSize: 16, color: '#535F70' }}>Loading...</Text>
@@ -56,6 +68,11 @@ function AppContent() {
         <Text style={{ fontSize: 14, color: '#535F70', textAlign: 'center' }}>{error}</Text>
       </View>
     );
+  }
+
+  // Redirect to onboarding if first-time user
+  if (!hasSeenOnboarding) {
+    return <Redirect href="/onboarding" />;
   }
 
   return (

@@ -46,6 +46,13 @@ const SLIDES = [
     color: '#F59E0B',
   },
   {
+    icon: 'psychology' as const,
+    title: 'Business Intelligence',
+    subtitle: 'AI-Powered Insights',
+    description: 'Get automated revenue trends, profit forecasts, dead stock alerts, margin crash warnings, and expense anomaly detection. Receive prioritized action items — reorder alerts, price reviews, and clearance suggestions — to grow your business smarter.',
+    color: '#8B5CF6',
+  },
+  {
     icon: 'cloud' as const,
     title: 'Backup & Restore',
     subtitle: 'Your Data, Always Safe',

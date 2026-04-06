@@ -34,7 +34,8 @@
           "enableFTS": false
         }
       ],
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "./plugins/withRemovedSplashScreen"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -45,9 +46,6 @@
       "eas": {
         "projectId": "91f6f20e-ff8a-47eb-8052-223f9308f592"
       }
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ]
+    }
   }
 }
