@@ -285,7 +285,7 @@ export default function DashboardScreen() {
               >
                 Invested
               </Text>
-              <Text
+              <Text numberOfLines={1}
                 style={[
                   styles.capitalValueSmall,
                   { color: "rgba(255,255,255,0.8)" },
@@ -309,7 +309,7 @@ export default function DashboardScreen() {
               >
                 {netProfit >= 0 ? "Profit" : "Loss"}
               </Text>
-              <Text
+              <Text numberOfLines={1} adjustsFontSizeToFit
                 style={[
                   styles.capitalValueMain,
                   { color: remainingCapital >= 0 ? "#FFFFFF" : "#FCA5A5" },
@@ -609,13 +609,13 @@ export default function DashboardScreen() {
               size={18}
               color={colors.primaryDark}
             />
-            <Text style={[styles.heroBtnText, { color: colors.primaryDark }]}>
+            <Text numberOfLines={1} style={[styles.heroBtnText, { color: colors.primaryDark }]}>
               New Sale
             </Text>
           </TouchableOpacity>
-          <View>
-            <Text style={styles.heroLabel}>Today&apos;s Sales</Text>
-            <Text style={styles.heroAmount}>MVR {todayTotal.toFixed(2)}</Text>
+          <View style={{ flexShrink: 1 }}>
+            <Text numberOfLines={1} style={styles.heroLabel}>Today&apos;s Sales</Text>
+            <Text numberOfLines={1} adjustsFontSizeToFit style={styles.heroAmount}>MVR {todayTotal.toFixed(2)}</Text>
             <View
               style={[
                 styles.trendBadge,
@@ -627,7 +627,7 @@ export default function DashboardScreen() {
                 size={14}
                 color="rgba(255,255,255,0.8)"
               />
-              <Text style={styles.trendText}>
+              <Text numberOfLines={1} style={styles.trendText}>
                 {totalTransactions} transactions
               </Text>
             </View>
@@ -729,7 +729,7 @@ export default function DashboardScreen() {
               Sales
             </Text>
           </View>
-          <Text style={[styles.statsCardValue, { color: colors.onSurface }]}>
+          <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.statsCardValue, { color: colors.onSurface }]}>
             {totalTransactions}
           </Text>
           <Text style={[styles.statsCardSub, { color: colors.secondary }]}>

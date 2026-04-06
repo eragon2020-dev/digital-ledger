@@ -406,7 +406,7 @@ export default function SalesScreen() {
         <View style={[styles.headerDecoration2, { backgroundColor: 'rgba(255,255,255,0.04)' }]} />
         <View style={styles.headerTop}>
           <View style={styles.headerTitleSection}>
-            <Text style={styles.headerTitle}>Sales</Text>
+            <Text numberOfLines={1} style={styles.headerTitle}>Sales</Text>
             <Text style={styles.headerSubtitle}>
               {totalCount.toLocaleString()} transactions
             </Text>

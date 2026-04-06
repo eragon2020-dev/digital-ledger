@@ -152,7 +152,7 @@ export default function ReportsScreen() {
       >
         <View style={styles.headerTop}>
           <View>
-            <Text style={styles.headerTitle}>Reports</Text>
+            <Text numberOfLines={1} style={styles.headerTitle}>Reports</Text>
             <Text style={styles.headerSub}>
               {MONTHS[selectedMonth]} {selectedYear}
             </Text>
@@ -275,8 +275,8 @@ export default function ReportsScreen() {
                     size={18}
                     color="rgba(255,255,255,0.7)"
                   />
-                  <Text style={styles.summaryCardLabel}>Income</Text>
-                  <Text style={styles.summaryCardValue}>
+                  <Text numberOfLines={1} style={styles.summaryCardLabel}>Income</Text>
+                  <Text numberOfLines={1} adjustsFontSizeToFit style={styles.summaryCardValue}>
                     MVR {fmt(monthlySalesIncome)}
                   </Text>
                 </View>
@@ -291,8 +291,8 @@ export default function ReportsScreen() {
                     size={18}
                     color="rgba(255,255,255,0.7)"
                   />
-                  <Text style={styles.summaryCardLabel}>Expenses</Text>
-                  <Text style={styles.summaryCardValue}>
+                  <Text numberOfLines={1} style={styles.summaryCardLabel}>Expenses</Text>
+                  <Text numberOfLines={1} adjustsFontSizeToFit style={styles.summaryCardValue}>
                     MVR {fmt(monthlyExpenses)}
                   </Text>
                 </View>
@@ -323,6 +323,7 @@ export default function ReportsScreen() {
                   </Text>
                 </View>
                 <Text
+                  numberOfLines={1} adjustsFontSizeToFit
                   style={[
                     styles.profitValue,
                     {
@@ -705,7 +706,7 @@ const styles = StyleSheet.create({
   statItem: { flex: 1, alignItems: "center", gap: 6 },
   statValue: { fontSize: 16, fontWeight: "700" },
   statLabel: { fontSize: 11, fontWeight: "500" },
-  statDivider: { width: 1, height: 40 },
+  statDivider: { width: 1, alignSelf: "stretch" },
   topCard: { borderRadius: 16, padding: 16, borderWidth: 1 },
   topRow: {
     flexDirection: "row",

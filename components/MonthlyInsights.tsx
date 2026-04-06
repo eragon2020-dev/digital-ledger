@@ -68,16 +68,16 @@ export function MonthlyInsights({ analysis }: MonthlyInsightsProps) {
         <View style={styles.headerLeft}>
           <View style={[styles.statusDot, { backgroundColor: PRIORITY_COLORS[analysis.status] }]} />
           <View style={{ flex: 1 }}>
-            <Text style={[styles.headerTitle, { color: colors.onSurface }]}>
+            <Text numberOfLines={1} style={[styles.headerTitle, { color: colors.onSurface }]}>
               Monthly Business Analysis
             </Text>
             <View style={styles.headerStats}>
               <MaterialIcons name={growthIcon} size={14} color={growthColor} />
-              <Text style={[styles.headerStat, { color: growthColor }]}>
+              <Text numberOfLines={1} style={[styles.headerStat, { color: growthColor }]}>
                 {analysis.revenueGrowthPct >= 0 ? '+' : ''}{analysis.revenueGrowthPct.toFixed(0)}%
               </Text>
               <Text style={[styles.headerStat, { color: colors.outline }]}>•</Text>
-              <Text style={[styles.headerStat, { color: colors.secondary }]}>
+              <Text numberOfLines={1} style={[styles.headerStat, { color: colors.secondary }]}>
                 {analysis.actions.length} actions
               </Text>
             </View>
@@ -106,7 +106,7 @@ export function MonthlyInsights({ analysis }: MonthlyInsightsProps) {
                 size={16}
                 color={isActive ? '#FFFFFF' : colors.secondary}
               />
-              <Text style={[styles.tabLabel, { color: isActive ? '#FFFFFF' : colors.secondary }]}>
+              <Text numberOfLines={1} style={[styles.tabLabel, { color: isActive ? '#FFFFFF' : colors.secondary }]}>
                 {tab.label}
               </Text>
               {count > 0 && (
@@ -170,15 +170,15 @@ function PerformanceTab({ performance, forecast, analysis, expandedItems, toggle
       <View style={styles.statsRow}>
         <View style={[styles.statBox, { backgroundColor: `${colors.primary}10` }]}>
           <Text style={[styles.statLabel, { color: colors.secondary }]}>Revenue</Text>
-          <Text style={[styles.statValue, { color: colors.onSurface }]}>
+          <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.statValue, { color: colors.onSurface }]}>
             MVR {analysis.projectedRevenue.high.toFixed(0)}
           </Text>
         </View>
         <View style={[styles.statBox, { backgroundColor: `${PRIORITY_COLORS[analysis.status]}10` }]}>
-          <Text style={[styles.statLabel, { color: colors.secondary }]}>Status</Text>
+          <Text numberOfLines={1} style={[styles.statLabel, { color: colors.secondary }]}>Status</Text>
           <View style={styles.statusBadge}>
             <View style={[styles.statusDotSmall, { backgroundColor: PRIORITY_COLORS[analysis.status] }]} />
-            <Text style={[styles.statusText, { color: PRIORITY_COLORS[analysis.status] }]}>
+            <Text numberOfLines={1} style={[styles.statusText, { color: PRIORITY_COLORS[analysis.status] }]}>
               {analysis.status === 'green' ? 'Healthy' : analysis.status === 'yellow' ? 'Caution' : 'At Risk'}
             </Text>
           </View>
@@ -280,7 +280,7 @@ function ExpensesTab({ expenses, expandedItems, toggleExpand, colors }: any) {
     return (
       <View style={[styles.tabContent, styles.emptyTab]}>
         <MaterialIcons name="check-circle" size={40} color={PRIORITY_COLORS.success} />
-        <Text style={[styles.emptyText, { color: colors.secondary }]}>
+        <Text numberOfLines={3} style={[styles.emptyText, { color: colors.secondary }]}>
           No spending anomalies detected.{'\n'}All expenses are within normal range.
         </Text>
       </View>
@@ -326,7 +326,7 @@ function ActionsTab({ actions, colors }: { actions: ActionItem[]; colors: any })
       {actions.length === 0 ? (
         <View style={[styles.tabContent, styles.emptyTab]}>
           <MaterialIcons name="check-circle" size={40} color={PRIORITY_COLORS.success} />
-          <Text style={[styles.emptyText, { color: colors.secondary }]}>
+          <Text numberOfLines={3} style={[styles.emptyText, { color: colors.secondary }]}>
             No urgent actions needed.{'\n'}Your business is running smoothly.
           </Text>
         </View>
@@ -341,7 +341,7 @@ function ActionsTab({ actions, colors }: { actions: ActionItem[]; colors: any })
             <View style={styles.actionContent}>
               <View style={styles.actionTitleRow}>
                 <MaterialIcons name={actionIcons[action.type] || 'task' as any} size={16} color={typeColors[action.type]} />
-                <Text style={[styles.actionTitle, { color: colors.onSurface }]}>
+                <Text numberOfLines={1} style={[styles.actionTitle, { color: colors.onSurface }]}>
                   {action.title}
                 </Text>
               </View>
@@ -382,7 +382,7 @@ function InsightRow({ insight, isExpanded, onToggle, colors }: {
           size={18}
           color={PRIORITY_COLORS[insight.priority]}
         />
-        <Text style={[styles.insightTitle, { color: colors.onSurface, flex: 1, marginLeft: 8 }]}>
+        <Text numberOfLines={1} style={[styles.insightTitle, { color: colors.onSurface, flex: 1, marginLeft: 8 }]}>
           {insight.title}
         </Text>
         <MaterialIcons

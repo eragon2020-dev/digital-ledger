@@ -223,7 +223,7 @@ export default function SaleDetailScreen() {
       >
         <View style={styles.headerTop}>
           <View>
-            <Text style={styles.headerTitle}>Sale {sale.id}</Text>
+            <Text numberOfLines={1} style={styles.headerTitle}>Sale {sale.id}</Text>
             <Text style={styles.headerDate}>
               {sale.timestamp.toLocaleDateString('en-US', {
                 year: 'numeric',

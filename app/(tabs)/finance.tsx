@@ -486,6 +486,7 @@ export default function FinanceScreen() {
               color={activeTab === tab.key ? colors.white : colors.secondary}
             />
             <Text
+              numberOfLines={1}
               style={[
                 styles.tabText,
                 {
@@ -528,7 +529,7 @@ export default function FinanceScreen() {
               <View style={[styles.financeDecoration2, { backgroundColor: 'rgba(255,255,255,0.05)' }]} />
               <View style={styles.financeHeaderTitleRow}>
                 <View style={styles.financeTitleSection}>
-                  <Text style={styles.financeHeaderTitle}>Income</Text>
+                  <Text numberOfLines={1} style={styles.financeHeaderTitle}>Income</Text>
                   <Text style={styles.financeHeaderSubtitle}>
                     {filteredIncomes.length} records
                   </Text>
@@ -803,6 +804,7 @@ export default function FinanceScreen() {
                         <View style={{ flex: 1 }}>
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                             <Text
+                              numberOfLines={1}
                               style={[
                                 styles.saleRowTitle,
                                 { color: colors.onSurface },
@@ -863,6 +865,7 @@ export default function FinanceScreen() {
                         <View style={{ flex: 1 }}>
                           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                             <Text
+                              numberOfLines={1}
                               style={[
                                 styles.saleRowTitle,
                                 { color: colors.onSurface },
@@ -926,7 +929,7 @@ export default function FinanceScreen() {
               <View style={[styles.financeDecoration2, { backgroundColor: 'rgba(255,255,255,0.05)' }]} />
               <View style={styles.financeHeaderTitleRow}>
                 <View style={styles.financeTitleSection}>
-                  <Text style={styles.financeHeaderTitle}>Expenses</Text>
+                  <Text numberOfLines={1} style={styles.financeHeaderTitle}>Expenses</Text>
                   <Text style={styles.financeHeaderSubtitle}>
                     {filteredExpenses.length} records
                   </Text>

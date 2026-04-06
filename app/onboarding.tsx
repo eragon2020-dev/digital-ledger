@@ -130,11 +130,11 @@ export default function OnboardingScreen() {
             </View>
 
             {/* Title */}
-            <Text style={[styles.title, { color: colors.onSurface }]}>{slide.title}</Text>
+            <Text numberOfLines={1} style={[styles.title, { color: colors.onSurface }]}>{slide.title}</Text>
             <Text style={[styles.subtitle, { color: slide.color }]}>{slide.subtitle}</Text>
 
             {/* Description */}
-            <Text style={[styles.description, { color: colors.secondary }]}>{slide.description}</Text>
+            <Text numberOfLines={5} adjustsFontSizeToFit style={[styles.description, { color: colors.secondary }]}>{slide.description}</Text>
 
             {/* Pagination Dots */}
             <View style={styles.pagination}>
@@ -162,7 +162,7 @@ export default function OnboardingScreen() {
           activeOpacity={0.85}
           onPress={handleNext}
         >
-          <Text style={styles.ctaText}>
+          <Text numberOfLines={1} style={styles.ctaText}>
             {currentIndex === SLIDES.length - 1 ? 'Get Started' : 'Next'}
           </Text>
           <MaterialIcons

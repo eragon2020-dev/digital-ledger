@@ -491,15 +491,15 @@ export default function InventoryScreen() {
         <View style={styles.heroTop}>
           <View>
             <Text style={styles.heroLabel}>Inventory Value</Text>
-            <Text style={styles.heroTitle}>Stock Overview</Text>
+            <Text numberOfLines={1} style={styles.heroTitle}>Stock Overview</Text>
           </View>
           <View style={styles.heroStats}>
             <View style={styles.heroStat}>
-              <Text style={styles.heroStatValue}>{products.length}</Text>
+              <Text numberOfLines={1} style={styles.heroStatValue}>{products.length}</Text>
               <Text style={styles.heroStatLabel}>Items</Text>
             </View>
             <View style={styles.heroStat}>
-              <Text style={styles.heroStatValue}>{lowStockCount}</Text>
+              <Text numberOfLines={1} style={styles.heroStatValue}>{lowStockCount}</Text>
               <Text style={styles.heroStatLabel}>Low Stock</Text>
             </View>
           </View>
@@ -508,7 +508,7 @@ export default function InventoryScreen() {
           <View style={styles.heroTotalItem}>
             <View style={styles.priceRow}>
               <Text style={styles.priceLabel}>Sell</Text>
-              <Text style={styles.heroTotalValue}>
+              <Text numberOfLines={1} adjustsFontSizeToFit style={styles.heroTotalValue}>
                 MVR{" "}
                 {totalSellValue.toLocaleString("en-US", {
                   minimumFractionDigits: 2,
@@ -1148,7 +1148,7 @@ const styles = StyleSheet.create({
   productStock: {
     fontSize: 20,
     fontWeight: "800",
-    minWidth: 32,
+    minWidth: 48,
     textAlign: "center",
   },
   cardActions: { flexDirection: "row", gap: 12 },

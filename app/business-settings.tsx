@@ -111,7 +111,7 @@ export default function BusinessSettingsScreen() {
       >
         <View style={styles.headerTop}>
           <View>
-            <Text style={styles.headerTitle}>Business Info</Text>
+            <Text numberOfLines={1} style={styles.headerTitle}>Business Info</Text>
             <Text style={styles.headerSubtitle}>Business Settings</Text>
           </View>
           <View style={styles.headerActions}>

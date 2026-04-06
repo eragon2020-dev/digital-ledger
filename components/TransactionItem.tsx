@@ -66,17 +66,18 @@ export function TransactionItem({ transaction, onPress, style }: TransactionItem
         >
           <MaterialIcons name={iconName as any} size={24} color={colors.primary} />
         </View>
-        <View>
-          <Text style={{ fontWeight: '700', color: colors.onSurface, fontSize: 14 }}>
+        <View style={{ flexShrink: 1 }}>
+          <Text numberOfLines={1} style={{ fontWeight: '700', color: colors.onSurface, fontSize: 14 }}>
             {transaction.title}
           </Text>
-          <Text style={{ fontSize: 12, color: colors.secondary, marginTop: 2 }}>
+          <Text numberOfLines={1} style={{ fontSize: 12, color: colors.secondary, marginTop: 2 }}>
             {transaction.subtitle}
           </Text>
         </View>
       </View>
-      <View style={{ alignItems: 'flex-end' }}>
+      <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
         <Text
+          numberOfLines={1}
           style={{
             fontWeight: '700',
             fontSize: 14,
@@ -86,6 +87,7 @@ export function TransactionItem({ transaction, onPress, style }: TransactionItem
           {formatAmount(transaction.amount, transaction.isExpense)}
         </Text>
         <Text
+          numberOfLines={1}
           style={{
             fontSize: 10,
             color: colors.outline,

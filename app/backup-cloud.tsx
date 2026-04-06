@@ -126,7 +126,7 @@ export default function BackupScreen() {
         <View style={[styles.card, { backgroundColor: colors.surfaceContainerLowest, borderColor: colors.outline }]}>
           <View style={styles.cardHeader}>
             <MaterialIcons name="backup" size={28} color={colors.primary} />
-            <Text style={[styles.cardTitle, { color: colors.onSurface }]}>Create Backup</Text>
+            <Text numberOfLines={1} style={[styles.cardTitle, { color: colors.onSurface }]}>Create Backup</Text>
           </View>
 
           <Text style={[styles.description, { color: colors.secondary }]}>
@@ -172,7 +172,7 @@ export default function BackupScreen() {
         <View style={[styles.card, { backgroundColor: colors.surfaceContainerLowest, borderColor: colors.outline }]}>
           <View style={styles.cardHeader}>
             <MaterialIcons name="restore" size={28} color={colors.primary} />
-            <Text style={[styles.cardTitle, { color: colors.onSurface }]}>Restore Backup</Text>
+            <Text numberOfLines={1} style={[styles.cardTitle, { color: colors.onSurface }]}>Restore Backup</Text>
           </View>
 
           <Text style={[styles.description, { color: colors.secondary }]}>
@@ -181,7 +181,7 @@ export default function BackupScreen() {
 
           <View style={[styles.warningCard, { backgroundColor: `${colors.tertiary}10`, borderColor: colors.tertiary }]}>
             <MaterialIcons name="warning" size={20} color={colors.tertiary} />
-            <Text style={[styles.warningText, { color: colors.tertiary }]}>
+            <Text numberOfLines={2} style={[styles.warningText, { color: colors.tertiary }]}>
               Warning: Restoring will delete all current data and replace it with backup data
             </Text>
           </View>
@@ -206,7 +206,7 @@ export default function BackupScreen() {
         <View style={[styles.card, { backgroundColor: colors.surfaceContainerLowest, borderColor: colors.outline }]}>
           <View style={styles.cardHeader}>
             <MaterialIcons name="info" size={28} color={colors.primary} />
-            <Text style={[styles.cardTitle, { color: colors.onSurface }]}>How It Works</Text>
+            <Text numberOfLines={1} style={[styles.cardTitle, { color: colors.onSurface }]}>How It Works</Text>
           </View>
           
           <View style={styles.infoSection}>
@@ -239,7 +239,7 @@ export default function BackupScreen() {
           <View style={styles.loadingOverlay}>
             <View style={[styles.loadingCard, { backgroundColor: colors.surfaceContainerLowest }]}>
               <ActivityIndicator size="large" color={colors.primary} />
-              <Text style={[styles.loadingText, { color: colors.onSurface }]}>
+              <Text numberOfLines={2} adjustsFontSizeToFit style={[styles.loadingText, { color: colors.onSurface, textAlign: "center" }]}>
                 {backupProgress || 'Please wait...'}
               </Text>
             </View>
