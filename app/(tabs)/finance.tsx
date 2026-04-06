@@ -22,11 +22,12 @@ import { StockStore } from "@/store/StockStore";
 import { SaleRecord, ExpenseRecord, ExpenseType } from "@/types";
 import { useToast } from "@/providers/ToastProvider";
 import { IncomeRecord } from "@/store/StockStore";
+import { getProfitAnalytics } from "@/database/analytics";
+import { getCurrentBusinessId } from "@/database/db";
 
 type FinanceTab = "income" | "expense";
 
 const EXPENSE_TYPES: { key: ExpenseType; label: string; icon: string }[] = [
-  { key: "stock", label: "Stock", icon: "inventory-2" },
   { key: "rent", label: "Rent", icon: "home" },
   { key: "utilities", label: "Utilities", icon: "bolt" },
   { key: "transport", label: "Transport", icon: "local-shipping" },
@@ -52,7 +53,6 @@ export default function FinanceScreen() {
   const [expenseHasMore, setExpenseHasMore] = useState(true);
   const [loadingExpenses, setLoadingExpenses] = useState(false);
   const [totalExpensesCount, setTotalExpensesCount] = useState(0);
-  const [totalExpensesAmount, setTotalExpensesAmount] = useState(0);
 
   // Pagination state for income
   const [incomeCursor, setIncomeCursor] = useState<string | undefined>(undefined);
@@ -95,6 +95,11 @@ export default function FinanceScreen() {
       )
       .reduce((sum, s) => sum + s.total, 0);
 
+    // Load all-time profit analytics
+    const bizId = await getCurrentBusinessId();
+    const profit = await getProfitAnalytics(bizId);
+    setProfitData(profit);
+
     // Load paginated expenses
     if (reset) {
       try {
@@ -111,10 +116,6 @@ export default function FinanceScreen() {
           toDate: showToDate || undefined,
         });
         setTotalExpensesCount(count);
-
-        // Aggregate total expenses amount
-        const totalAmount = result.data.reduce((sum, e) => sum + e.amount, 0);
-        setTotalExpensesAmount(totalAmount);
 
         setExpenses(result.data);
         setFilteredExpenses(result.data);
@@ -451,8 +452,19 @@ export default function FinanceScreen() {
   const getExpenseTypeIcon = (t: ExpenseType) =>
     EXPENSE_TYPES.find((e) => e.key === t)?.icon || "receipt";
 
-  const totalExpenses = totalExpensesAmount;
-  const profit = monthlyIncome - totalExpenses;
+  // Use getProfitAnalytics for COGS-based profit calculation
+  const [profitData, setProfitData] = useState<{ totalRevenue: number; totalCost: number; totalProfit: number; profitMargin: number }>({
+    totalRevenue: 0,
+    totalCost: 0,
+    totalProfit: 0,
+    profitMargin: 0,
+  });
+
+  // Non-stock expenses for display
+  const totalNonStockExpenses = expenses
+    .filter((e) => e.expenseType !== "stock")
+    .reduce((sum, e) => sum + e.amount, 0);
+  const profit = monthlyIncome - totalNonStockExpenses;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -941,7 +953,7 @@ export default function FinanceScreen() {
                 <View style={styles.financeHeaderTotal}>
                   <Text style={styles.financeHeaderTotalLabel}>Total</Text>
                   <Text style={styles.financeHeaderTotalValue}>
-                    MVR {formatCurrency(totalExpenses)}
+                    MVR {formatCurrency(totalNonStockExpenses)}
                   </Text>
                 </View>
               </View>
@@ -1244,21 +1256,14 @@ export default function FinanceScreen() {
                           />
                         </View>
                         <View style={{ flex: 1 }}>
-                          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                            <Text
-                              style={[
-                                styles.saleRowTitle,
-                                { color: colors.onSurface },
-                              ]}
-                            >
-                              {exp.title}
-                            </Text>
-                            <View style={[styles.sourceBadge, { backgroundColor: `${colors.tertiary}15` }]}>
-                              <Text style={[styles.sourceBadgeText, { color: colors.tertiary }]}>
-                                {exp.expenseType === "stock" ? "Stock" : "Manual"}
-                              </Text>
-                            </View>
-                          </View>
+                          <Text
+                            style={[
+                              styles.saleRowTitle,
+                              { color: colors.onSurface },
+                            ]}
+                          >
+                            {exp.title}
+                          </Text>
                           <Text
                             style={[
                               styles.saleRowSub,
@@ -1460,6 +1465,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   listTitle: { fontSize: 18, fontWeight: "700" },
+  listSubtitle: { fontSize: 12, fontWeight: "400" },
   listCount: { fontSize: 13, fontWeight: "500" },
   emptyList: { alignItems: "center", paddingVertical: 40, gap: 8 },
   emptyText: { fontSize: 15 },

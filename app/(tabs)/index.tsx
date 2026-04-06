@@ -29,6 +29,7 @@ import {
   deleteBusiness,
   BusinessRecord,
 } from "@/database/db";
+import { getProfitAnalytics } from "@/database/analytics";
 
 export default function DashboardScreen() {
   const colorScheme = useColorScheme();
@@ -43,7 +44,7 @@ export default function DashboardScreen() {
   const [paidAmount, setPaidAmount] = useState(0);
   const [pendingAmount, setPendingAmount] = useState(0);
   const [initialCapital, setInitialCapital] = useState(0);
-  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [netProfit, setNetProfit] = useState(0); // All-time profit/loss
   const [showCapitalEdit, setShowCapitalEdit] = useState(false);
   const [capitalInput, setCapitalInput] = useState("");
   const [refreshing, setRefreshing] = useState(false);
@@ -71,7 +72,12 @@ export default function DashboardScreen() {
       console.log('loadData: Fetching recent sales...');
       const salesData = await StockStore.getRecentSales(20);
       setSales(salesData);
-      setTotalTransactions(salesData.length);
+
+      // Get accurate totals from DB (not from limited recent sales)
+      const todayTotalVal = await StockStore.getTodayTotal();
+      setTodayTotal(todayTotalVal);
+      const todayCount = await StockStore.getTodayCount();
+      setTotalTransactions(todayCount);
 
       console.log('loadData: Fetching capital...');
       const cap = await StockStore.getCapital();
@@ -90,15 +96,26 @@ export default function DashboardScreen() {
       setBusinesses(allBiz);
 
       const now = new Date();
-      console.log('loadData: Fetching monthly stock cost...');
-      const monthlyStockCost = await StockStore.getMonthlyStockCost(
-        now.getFullYear(),
-        now.getMonth() + 1,
-      );
-      console.log('loadData: Fetching total stock cost...');
-      const totalStockCost = await StockStore.getTotalStockCostValue();
 
-      // Load only recent expenses for monthly calculation (not ALL)
+      // Calculate all-time profit for capital calculation
+      // Net Profit = (Total Revenue - Total COGS) - Total Non-Stock Expenses + Total Manual Income
+      const profitData = await getProfitAnalytics(bizId);
+      const totalRevenue = profitData.totalRevenue;
+      const totalCOGS = profitData.totalCost;
+      const grossProfit = totalRevenue - totalCOGS;
+
+      // Get non-stock expenses total from DB (not client-side filter)
+      const nonStockExpensesTotal = await StockStore.getNonStockExpensesTotal();
+
+      // Get all manual income
+      const allIncomes = await StockStore.getIncomes();
+      const totalManualIncome = allIncomes.reduce((sum, i) => sum + i.amount, 0);
+
+      // Net profit = gross profit - non-stock expenses + manual income
+      const calculatedNetProfit = grossProfit - nonStockExpensesTotal + totalManualIncome;
+      setNetProfit(calculatedNetProfit);
+
+      // Load only recent expenses for monthly display (not used in capital calc)
       console.log('loadData: Fetching recent expenses...');
       const recentExpenses = await StockStore.getRecentExpenses(200);
       const manualExpenses = recentExpenses
@@ -108,15 +125,6 @@ export default function DashboardScreen() {
             e.timestamp.getFullYear() === now.getFullYear(),
         )
         .reduce((sum, e) => sum + e.amount, 0);
-      setTotalExpenses(monthlyStockCost + totalStockCost + manualExpenses);
-
-      // Calculate today's total
-      const today = new Date().toISOString().split("T")[0];
-      const todaySales = salesData.filter(
-        (s) => s.timestamp.toISOString().split("T")[0] === today,
-      );
-      const total = todaySales.reduce((sum, s) => sum + s.total, 0);
-      setTodayTotal(total);
 
       // Calculate paid (cash + transfer) and pending (dharani/credit)
       const paid = salesData
@@ -212,7 +220,7 @@ export default function DashboardScreen() {
     setShowBusinessDropdown(true);
   };
 
-  const remainingCapital = initialCapital - totalExpenses;
+  const remainingCapital = initialCapital + netProfit;
 
   // Convert SaleRecord to TransactionItem format - show more
   const recentTransactions = sales.slice(0, 10).map((sale) => ({
@@ -295,7 +303,7 @@ export default function DashboardScreen() {
             <Text
               style={[styles.capitalLabel, { color: "rgba(255,255,255,0.7)" }]}
             >
-              Capital
+              Net Worth
             </Text>
           </View>
           <View style={styles.capitalValues}>
@@ -306,7 +314,7 @@ export default function DashboardScreen() {
                   { color: "rgba(255,255,255,0.6)" },
                 ]}
               >
-                Initial
+                Invested
               </Text>
               <Text
                 style={[
@@ -330,7 +338,7 @@ export default function DashboardScreen() {
                   { color: "rgba(255,255,255,0.6)" },
                 ]}
               >
-                Remaining
+                {netProfit >= 0 ? "Profit" : "Loss"}
               </Text>
               <Text
                 style={[
@@ -348,7 +356,7 @@ export default function DashboardScreen() {
           <Text
             style={[styles.capitalHint, { color: "rgba(255,255,255,0.5)" }]}
           >
-            Long press to edit
+            Invested + All-time profit
           </Text>
         </TouchableOpacity>
         <View
@@ -676,7 +684,7 @@ export default function DashboardScreen() {
             <Text
               style={[styles.capitalEditTitle, { color: colors.onSurface }]}
             >
-              Edit Capital
+              Edit Invested Capital
             </Text>
             <TextInput
               placeholder="Amount (MVR)"

@@ -41,6 +41,7 @@ export default function ReportsScreen() {
   const [monthlySalesIncome, setMonthlySalesIncome] = useState(0);
   const [monthlyExpenses, setMonthlyExpenses] = useState(0);
   const [monthlyStockCost, setMonthlyStockCost] = useState(0);
+  const [monthlyStockPurchases, setMonthlyStockPurchases] = useState(0);
   const [salesCount, setSalesCount] = useState(0);
   const [yearlyIncome, setYearlyIncome] = useState(0);
   const [yearlyExpense, setYearlyExpense] = useState(0);
@@ -74,20 +75,32 @@ export default function ReportsScreen() {
     setMonthlySalesIncome(mSalesIncome + mManualIncome);
     setSalesCount(monthSales.length);
 
-    // Monthly expenses (manual + stock cost)
+    // Monthly stock purchases (cash spent on inventory this month)
+    const mStockPurchases = expenses
+      .filter(
+        (e) =>
+          e.expenseType === "stock" &&
+          e.timestamp.getMonth() === selectedMonth &&
+          e.timestamp.getFullYear() === selectedYear,
+      )
+      .reduce((sum, e) => sum + e.amount, 0);
+    setMonthlyStockPurchases(mStockPurchases);
+
+    // Monthly expenses (manual non-stock only + COGS)
     const mStockCost = await StockStore.getMonthlyStockCost(
       selectedYear,
       selectedMonth + 1,
     );
     setMonthlyStockCost(mStockCost);
-    const mExpenses = expenses
+    const mNonStockExpenses = expenses
       .filter(
         (e) =>
+          e.expenseType !== "stock" && // Exclude stock purchases (they're tracked separately)
           e.timestamp.getMonth() === selectedMonth &&
           e.timestamp.getFullYear() === selectedYear,
       )
       .reduce((sum, e) => sum + e.amount, 0);
-    setMonthlyExpenses(mExpenses + mStockCost);
+    setMonthlyExpenses(mNonStockExpenses + mStockCost);
 
     // Yearly totals
     const yearSales = sales.filter(
@@ -101,11 +114,13 @@ export default function ReportsScreen() {
       .reduce((sum, inc) => sum + inc.amount, 0);
 
     setYearlyIncome(yearSalesIncome + yearManualIncome);
-    const yearExpenses = expenses
-      .filter((e) => e.timestamp.getFullYear() === selectedYear)
+    const yearNonStockExpenses = expenses
+      .filter(
+        (e) => e.expenseType !== "stock" && e.timestamp.getFullYear() === selectedYear,
+      )
       .reduce((sum, e) => sum + e.amount, 0);
     const yearStockCost = await StockStore.getYearlyStockCost(selectedYear);
-    setYearlyExpense(yearExpenses + yearStockCost);
+    setYearlyExpense(yearNonStockExpenses + yearStockCost);
 
     // Top products
     const tops = await StockStore.getTopProducts(
@@ -401,6 +416,64 @@ export default function ReportsScreen() {
               </View>
             </View>
 
+            {/* Inventory Costs for Selected Month */}
+            <View
+              style={[
+                styles.inventoryCostCard,
+                {
+                  backgroundColor: colors.surfaceContainerLowest,
+                  borderColor: `${colors.outline}10`,
+                },
+              ]}
+            >
+              <View style={styles.inventoryCostHeader}>
+                <MaterialIcons name="inventory-2" size={20} color={colors.primary} />
+                <View style={{ flex: 1, marginLeft: 10 }}>
+                  <Text style={[styles.inventoryCostTitle, { color: colors.onSurface }]}>
+                    Inventory Costs
+                  </Text>
+                  <Text style={[styles.inventoryCostSub, { color: colors.secondary }]}>
+                    {MONTHS[selectedMonth]} {selectedYear}
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.inventoryCostRows}>
+                <View style={styles.inventoryCostRow}>
+                  <Text style={[styles.inventoryCostLabel, { color: colors.secondary }]}>
+                    Stock Purchased
+                  </Text>
+                  <Text style={[styles.inventoryCostValue, { color: colors.onSurface }]}>
+                    MVR {fmt(monthlyStockPurchases)}
+                  </Text>
+                </View>
+                <View style={styles.inventoryCostDivider} />
+                <View style={styles.inventoryCostRow}>
+                  <Text style={[styles.inventoryCostLabel, { color: colors.secondary }]}>
+                    COGS (Items Sold)
+                  </Text>
+                  <Text style={[styles.inventoryCostValue, { color: "#F59E0B" }]}>
+                    MVR {fmt(monthlyStockCost)}
+                  </Text>
+                </View>
+                {monthlyStockPurchases > 0 && monthlyStockCost > 0 && (
+                  <>
+                    <View style={styles.inventoryCostDivider} />
+                    <View style={styles.inventoryCostRow}>
+                      <Text style={[styles.inventoryCostLabel, { color: colors.secondary }]}>
+                        Unsold (Asset Value)
+                      </Text>
+                      <Text style={[styles.inventoryCostValue, { color: colors.primary }]}>
+                        MVR {fmt(Math.max(0, monthlyStockPurchases - monthlyStockCost))}
+                      </Text>
+                    </View>
+                  </>
+                )}
+              </View>
+              <Text style={[styles.inventoryCostNote, { color: colors.outline }]}>
+                Stock purchases are assets. COGS = cost of items actually sold.
+              </Text>
+            </View>
+
             {/* Top Products */}
             {topProducts.length > 0 && (
               <View style={styles.section}>
@@ -676,4 +749,14 @@ const styles = StyleSheet.create({
   },
   yearLabel: { fontSize: 14, fontWeight: "500" },
   yearValue: { fontSize: 18, fontWeight: "800" },
+  inventoryCostCard: { borderRadius: 16, padding: 16, borderWidth: 1 },
+  inventoryCostHeader: { flexDirection: "row", alignItems: "center", marginBottom: 12 },
+  inventoryCostTitle: { fontSize: 16, fontWeight: "700" },
+  inventoryCostSub: { fontSize: 12 },
+  inventoryCostRows: { gap: 8 },
+  inventoryCostRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  inventoryCostLabel: { fontSize: 13, fontWeight: "500" },
+  inventoryCostValue: { fontSize: 15, fontWeight: "700" },
+  inventoryCostDivider: { height: 1, backgroundColor: "rgba(0,0,0,0.05)" },
+  inventoryCostNote: { fontSize: 9, marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: "rgba(0,0,0,0.05)", textAlign: "center", fontStyle: "italic" },
 });

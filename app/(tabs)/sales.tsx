@@ -46,6 +46,7 @@ export default function SalesScreen() {
   const [paginatedData, setPaginatedData] = useState<PaginatedResult<SaleRecord> | null>(null);
   const [loadingMore, setLoadingMore] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
+  const [totalSales, setTotalSales] = useState(0);
 
   // Date filters (server-side)
   const [showDateFilter, setShowDateFilter] = useState(false);
@@ -82,6 +83,10 @@ export default function SalesScreen() {
         toDate: toDate || undefined,
       });
       setTotalCount(count);
+
+      // Load total from DB (not just current page)
+      const allTimeTotal = await StockStore.getAllTimeTotal();
+      setTotalSales(allTimeTotal);
 
       if (reset) {
         setSales(result.data);
@@ -255,8 +260,6 @@ export default function SalesScreen() {
         return colors.primary;
     }
   };
-
-  const totalSales = sales.reduce((sum, s) => sum + s.total, 0);
 
   // Render each sale item
   const renderSaleItem = useCallback(({ item: sale }: { item: SaleRecord }) => (

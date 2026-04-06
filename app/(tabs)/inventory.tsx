@@ -288,6 +288,7 @@ export default function InventoryScreen() {
   const [showSearch, setShowSearch] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [products, setProducts] = useState<Product[]>([]);
+  const [lowStockCount, setLowStockCount] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -322,6 +323,10 @@ export default function InventoryScreen() {
           searchQuery: searchQuery || undefined,
         });
         setTotalCount(count);
+
+        // Get low stock count from DB (not from paginated page)
+        const lowStock = await StockStore.getLowStockCount(5);
+        setLowStockCount(lowStock);
 
         if (reset) {
           setProducts(result.data);
@@ -387,9 +392,6 @@ export default function InventoryScreen() {
     (sum, p) => sum + (p.buyPrice ?? 0) * p.stock,
     0,
   );
-  const lowStockCount = products.filter(
-    (p) => p.productType !== "service" && p.stock <= 5,
-  ).length;
 
   const handleAddProduct = async (data: {
     name: string;
@@ -413,17 +415,7 @@ export default function InventoryScreen() {
       productType: data.productType,
     });
 
-    // Auto-create expense for inventory stock
-    if (data.productType === "item" && buyPrice > 0 && stock > 0) {
-      const totalCost = buyPrice * stock;
-      await StockStore.addExpense({
-        title: data.name,
-        amount: totalCost,
-        expenseType: "stock",
-        timestamp: new Date(),
-      });
-    }
-
+    // Stock is an asset — no expense created (COGS will be calculated on sale)
     setShowAddForm(false);
     loadProducts();
   };
@@ -442,7 +434,6 @@ export default function InventoryScreen() {
     const buyPrice = parseFloat(data.buyPrice) || 0;
     const newStock =
       data.productType === "service" ? 0 : parseInt(data.stock) || 0;
-    const stockDelta = newStock - product.stock;
 
     await StockStore.updateProduct({
       ...product,
@@ -454,17 +445,7 @@ export default function InventoryScreen() {
       productType: data.productType,
     });
 
-    // Auto-create expense if stock was increased
-    if (data.productType === "item" && buyPrice > 0 && stockDelta > 0) {
-      const additionalCost = buyPrice * stockDelta;
-      await StockStore.addExpense({
-        title: data.name,
-        amount: additionalCost,
-        expenseType: "stock",
-        timestamp: new Date(),
-      });
-    }
-
+    // No auto expense — COGS is calculated when items are sold
     setExpandedId(null);
     loadProducts();
   };
@@ -484,14 +465,6 @@ export default function InventoryScreen() {
               `"${product.name}" has sales history. Delete the related sales first, or set stock to 0 instead.`
             );
             return;
-          }
-          // Delete associated stock expenses
-          if (
-            product.productType === "item" &&
-            product.buyPrice &&
-            product.buyPrice > 0
-          ) {
-            await StockStore.deleteExpensesByTitle(product.name, "stock");
           }
           await StockStore.deleteProduct(product.id);
           loadProducts();

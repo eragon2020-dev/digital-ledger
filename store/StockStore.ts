@@ -128,10 +128,9 @@ export const StockStore = {
 
     const rawSubtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const rawTax = rawSubtotal * (taxRate / 100);
-    const rawTotal = rawSubtotal + rawTax;
     const subtotal = parseFloat((Math.round(rawSubtotal * 100) / 100).toFixed(2));
     const tax = parseFloat((Math.round(rawTax * 100) / 100).toFixed(2));
-    const total = parseFloat((Math.round(rawTotal * 100) / 100).toFixed(2));
+    const total = parseFloat((subtotal + tax).toFixed(2));
 
     // Use timestamp-based ID to avoid conflicts
     const saleId = `#${Date.now()}`;
@@ -506,6 +505,47 @@ export const StockStore = {
       paymentStatus: (sale.payment_status as 'paid' | 'unpaid') ?? 'paid',
       timestamp: new Date(sale.timestamp),
     }));
+  },
+
+  getTodayTotal: async (): Promise<number> => {
+    const businessId = await getCurrentBusinessId();
+    const today = new Date().toISOString().split('T')[0];
+    return await SaleDB.getDailyTotal(businessId, today);
+  },
+
+  getTodayCount: async (): Promise<number> => {
+    const businessId = await getCurrentBusinessId();
+    return await SaleDB.getTodayCount(businessId);
+  },
+
+  getAllTimeTotal: async (): Promise<number> => {
+    const businessId = await getCurrentBusinessId();
+    return await SaleDB.getAllTimeTotal(businessId);
+  },
+
+  getAllTimeCount: async (): Promise<number> => {
+    const businessId = await getCurrentBusinessId();
+    return await SaleDB.getAllTimeCount(businessId);
+  },
+
+  getNonStockExpensesTotal: async (): Promise<number> => {
+    const businessId = await getCurrentBusinessId();
+    const db = getDb();
+    const result = await db.getFirstAsync<{ total: number }>(
+      "SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE business_id = ? AND expense_type != 'stock'",
+      businessId
+    );
+    return result?.total ?? 0;
+  },
+
+  getLowStockCount: async (threshold: number = 5): Promise<number> => {
+    const businessId = await getCurrentBusinessId();
+    const db = getDb();
+    const result = await db.getFirstAsync<{ count: number }>(
+      'SELECT COUNT(*) as count FROM products WHERE business_id = ? AND stock <= ? AND product_type = \'item\'',
+      businessId, threshold
+    );
+    return result?.count ?? 0;
   },
 
   setBusinessName: async (name: string): Promise<void> => {

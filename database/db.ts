@@ -305,6 +305,19 @@ export async function initDatabase(deleteExisting = false) {
       console.warn('⚠️ FTS5 cleanup failed:', cleanupErr);
     }
 
+    // Cleanup: Remove stock-type expenses (stock is an asset, not an expense)
+    try {
+      const stockExpCount = await database.getFirstAsync<{ count: number }>(
+        "SELECT COUNT(*) as count FROM expenses WHERE expense_type = 'stock'"
+      );
+      if (stockExpCount?.count) {
+        await database.runAsync(`DELETE FROM expenses WHERE expense_type = 'stock'`);
+        console.log(`🧹 Removed ${stockExpCount.count} stock-type expenses (now tracked as COGS)`);
+      }
+    } catch (cleanupErr) {
+      console.warn('⚠️ Stock expense cleanup failed:', cleanupErr);
+    }
+
     // Create archive tables for old data
     try {
       await database.execAsync(`
@@ -546,11 +559,12 @@ export const ProductDB = {
       // First, verify the business exists
       const businessCheck = await database.getFirstAsync('SELECT id FROM businesses WHERE id = ?', businessId);
       console.log('[ProductDB.create] Business exists:', businessCheck);
-      
-      // Use execAsync with explicit SQL string (avoid runAsync finalize issue)
-      const sql = `INSERT INTO products (id, business_id, name, price, stock, image, sku, buy_price, category, product_type) VALUES ('${id}', '${businessId}', '${name.replace(/'/g, "''")}', ${price}, ${stock}, '${image.replace(/'/g, "''")}', '${sku.replace(/'/g, "''")}', ${buyPrice}, '${category.replace(/'/g, "''")}', '${productType}');`;
-      console.log('[ProductDB.create] SQL:', sql);
-      await database.execAsync(sql);
+
+      // Use parameterized query to prevent SQL injection and syntax errors
+      await database.runAsync(
+        `INSERT INTO products (id, business_id, name, price, stock, image, sku, buy_price, category, product_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        id, businessId, name, price, stock, image, sku, buyPrice, category, productType
+      );
       
       // Re-enable foreign keys
       await database.execAsync('PRAGMA foreign_keys=ON;');
@@ -741,9 +755,10 @@ export const ProductDB = {
           console.log('✅ Test insert succeeded');
           
           // Now try the actual insert
-          const retrySql = `INSERT INTO products (id, business_id, name, price, stock, image, sku, buy_price, category, product_type) VALUES ('${id}', '${businessId}', '${name.replace(/'/g, "''")}', ${price}, ${stock}, '${image.replace(/'/g, "''")}', '${sku.replace(/'/g, "''")}', ${buyPrice}, '${category.replace(/'/g, "''")}', '${productType}');`;
-          console.log('[ProductDB.create] Retry SQL:', retrySql);
-          await freshDb.execAsync(retrySql);
+          await freshDb.runAsync(
+            `INSERT INTO products (id, business_id, name, price, stock, image, sku, buy_price, category, product_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            id, businessId, name, price, stock, image, sku, buyPrice, category, productType
+          );
           console.log('[ProductDB.create] Retry SUCCESSFUL');
           
           // Clean up test data
@@ -1110,6 +1125,8 @@ export const SaleDB = {
       // Insert new items and deduct stock
       if (updates.items) {
         for (const item of updates.items) {
+          const roundedPrice = parseFloat((Math.round(item.price * 100) / 100).toFixed(2));
+          const roundedTotal = parseFloat((Math.round(item.total * 100) / 100).toFixed(2));
           await database.runAsync(
             `INSERT INTO sale_items (id, sale_id, product_id, product_name, price, quantity, total, buy_price)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -1117,9 +1134,9 @@ export const SaleDB = {
             saleId,
             item.productId,
             item.productName,
-            item.price,
+            roundedPrice,
             item.quantity,
-            item.total,
+            roundedTotal,
             item.buyPrice || 0
           );
 
@@ -1181,6 +1198,34 @@ export const SaleDB = {
       date
     );
     return result?.total ?? 0;
+  },
+
+  async getTodayCount(businessId: string) {
+    const database = getDb();
+    const result = await database.getFirstAsync<{ count: number }>(
+      `SELECT COUNT(*) as count FROM sales
+       WHERE business_id = ? AND DATE(timestamp) = DATE('now')`,
+      businessId
+    );
+    return result?.count ?? 0;
+  },
+
+  async getAllTimeTotal(businessId: string) {
+    const database = getDb();
+    const result = await database.getFirstAsync<{ total: number }>(
+      `SELECT COALESCE(SUM(total), 0) as total FROM sales WHERE business_id = ?`,
+      businessId
+    );
+    return result?.total ?? 0;
+  },
+
+  async getAllTimeCount(businessId: string) {
+    const database = getDb();
+    const result = await database.getFirstAsync<{ count: number }>(
+      `SELECT COUNT(*) as count FROM sales WHERE business_id = ?`,
+      businessId
+    );
+    return result?.count ?? 0;
   },
 
   async getMonthlyTotal(businessId: string, year: number, month: number) {

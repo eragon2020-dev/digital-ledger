@@ -253,7 +253,7 @@ export async function getProfitAnalytics(businessId: string): Promise<{
   const totalRevenue = revenueResult?.total_revenue ?? 0;
   const totalCost = costResult?.total_cost ?? 0;
   const totalProfit = parseFloat((totalRevenue - totalCost).toFixed(2));
-  const profitMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+  const profitMargin = totalRevenue > 0 ? parseFloat(((totalProfit / totalRevenue) * 100).toFixed(2)) : 0;
 
   return {
     totalRevenue,
