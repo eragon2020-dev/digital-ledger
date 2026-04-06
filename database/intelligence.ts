@@ -26,7 +26,6 @@ export async function generateMonthlyAnalysis(
     lastMonthRevenue,
     threeMonthRevenue,
     thisMonthExpenses,
-    _lastMonthExpenses,
     thisMonthIncome,
     products,
     monthlyStockCost,
@@ -37,7 +36,6 @@ export async function generateMonthlyAnalysis(
     getPrevMonthTotal(businessId, year, month, 1),
     getPrevMonthTotal(businessId, year, month, 3),
     getMonthlyExpenses(businessId, year, month),
-    getPrevMonthExpenses(businessId, year, month, 1),
     getMonthlyIncome(businessId, year, month),
     getAllProducts(businessId),
     getMonthlyStockCost(businessId, year, month),
@@ -48,12 +46,36 @@ export async function generateMonthlyAnalysis(
   const totalIncome = thisMonthRevenue + thisMonthIncome;
   const totalExpenses = thisMonthExpenses + monthlyStockCost;
   const profit = totalIncome - totalExpenses;
+
+  // If there's absolutely no activity this month, return early
+  if (totalIncome === 0 && totalExpenses === 0 && unpaidSales.length === 0) {
+    return {
+      month: MONTHS[month - 1],
+      year,
+      insights: [
+        {
+          type: 'performance' as const,
+          priority: 'info' as const,
+          title: `No data for ${MONTHS[month - 1]} ${year}`,
+          detail: `No sales, expenses, or income recorded for this period. Start recording transactions to see insights here.`,
+        },
+      ],
+      actions: [],
+      summary: `No data recorded for ${MONTHS[month - 1]} ${year}`,
+      revenueGrowthPct: 0,
+      projectedRevenue: { low: 0, high: 0 },
+      capitalProjection: capital,
+      status: 'yellow' as const,
+    };
+  }
+
   const growthPct = lastMonthRevenue > 0
     ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
     : 0;
 
-  // === 1. PERFORMANCE INSIGHTS ===
-  if (growthPct > 5) {
+  // === 1. PERFORMANCE INSIGHTS (only if there's revenue) ===
+  if (thisMonthRevenue > 0 || lastMonthRevenue > 0) {
+    if (growthPct > 5) {
     insights.push({
       type: 'performance',
       priority: 'success',
@@ -75,11 +97,13 @@ export async function generateMonthlyAnalysis(
       detail: `Revenue MVR ${fmt(thisMonthRevenue)} — consistent with last month. Predictable income is healthy.`,
     });
   }
+  }
 
-  // === 2. TOP PRODUCTS ANALYSIS ===
+  // === 2. TOP PRODUCTS ANALYSIS (only if there are products with sales) ===
   const productStats = await analyzeProducts(products, businessId, year, month);
 
-  if (productStats.breadwinner) {
+  // Only show breadwinner if there's actual revenue and units sold
+  if (productStats.breadwinner && productStats.breadwinner.unitsSold > 0 && productStats.breadwinner.revenueShare > 0) {
     const p = productStats.breadwinner;
     insights.push({
       type: 'topProduct',
@@ -188,24 +212,30 @@ export async function generateMonthlyAnalysis(
     });
   }
 
-  // === 8. FORECAST ===
-  const avgGrowth = threeMonthRevenue > 0
-    ? (thisMonthRevenue - getPrevMonthTotalSafe(threeMonthRevenue, 3)) / threeMonthRevenue
-    : 0;
-  const projectedRevenue = thisMonthRevenue * (1 + avgGrowth);
-  const range = projectedRevenue * 0.08;
-  const projectedProfit = projectedRevenue - totalExpenses;
-  const projectedCapital = currentCapital + projectedProfit;
+  // === 8. FORECAST (only if there's revenue to project from) ===
+  let projectedRevenue = 0;
+  let range = 0;
+  let projectedCapital = capital;
 
-  insights.push({
-    type: 'forecast',
-    priority: projectedCapital > capital ? 'success' : 'warning',
-    title: `Next month forecast`,
-    detail: `Revenue: MVR ${fmt(projectedRevenue - range)} – ${fmt(projectedRevenue + range)}. Expenses est. MVR ${fmt(totalExpenses)}.`,
-    suggestion: projectedCapital > capital
-      ? `On track. Capital could reach MVR ${fmt(projectedCapital)} by end of ${MONTHS[(month) % 12]}.`
-      : `Trend is declining. Focus on increasing sales of your top 2 products.`,
-  });
+  if (thisMonthRevenue > 0) {
+    const avgGrowth = threeMonthRevenue > 0
+      ? (thisMonthRevenue - getPrevMonthTotalSafe(threeMonthRevenue, 3)) / threeMonthRevenue
+      : 0;
+    projectedRevenue = thisMonthRevenue * (1 + avgGrowth);
+    range = projectedRevenue * 0.08;
+    const projectedProfit = projectedRevenue - totalExpenses;
+    projectedCapital = currentCapital + projectedProfit;
+
+    insights.push({
+      type: 'forecast',
+      priority: projectedCapital > capital ? 'success' : 'warning',
+      title: `Next month forecast`,
+      detail: `Revenue: MVR ${fmt(projectedRevenue - range)} – ${fmt(projectedRevenue + range)}. Expenses est. MVR ${fmt(totalExpenses)}.`,
+      suggestion: projectedCapital > capital
+        ? `On track. Capital could reach MVR ${fmt(projectedCapital)} by end of ${MONTHS[(month) % 12]}.`
+        : `Trend is declining. Focus on increasing sales of your top 2 products.`,
+    });
+  }
 
   // === 9. ACTION ITEMS ===
   // Reorder alerts
@@ -382,9 +412,9 @@ async function analyzeProducts(products: any[], businessId: string, year: number
     p.daysSinceLastSale = getLastSaleDays(p.lastMonthSales, referenceDate);
   });
 
-  // Breadwinner: highest revenue share > 25%
+  // Breadwinner: highest revenue share > 25% with actual sales
   const sorted = [...stats].sort((a: any, b: any) => b.revenue - a.revenue);
-  const breadwinner = sorted.find((p: any) => p.revenueShare > 25 && p.unitsSold > 0) || sorted[0];
+  const breadwinner = sorted.find((p: any) => p.revenueShare > 25 && p.unitsSold > 0) || null;
 
   // High volume, low margin
   const highVolumeLowMargin = stats.filter((p: any) => p.unitsSold >= 20 && p.marginPct < 30 && p.revenue > 0);
