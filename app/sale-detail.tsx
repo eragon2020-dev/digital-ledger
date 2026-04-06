@@ -86,8 +86,8 @@ export default function SaleDetailScreen() {
   const updateQuantity = async (productId: string, delta: number) => {
     if (!sale) return;
 
-    const products = await StockStore.getProducts();
-    const product = products.find((p) => p.id === productId);
+    // Use already-loaded availableProducts instead of fetching ALL products
+    const product = availableProducts.find((p) => p.id === productId);
     const isService = product?.productType === 'service';
 
     if (!product && !isService && delta > 0) return;

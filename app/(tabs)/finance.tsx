@@ -22,8 +22,6 @@ import { StockStore } from "@/store/StockStore";
 import { SaleRecord, ExpenseRecord, ExpenseType } from "@/types";
 import { useToast } from "@/providers/ToastProvider";
 import { IncomeRecord } from "@/store/StockStore";
-import { getProfitAnalytics } from "@/database/analytics";
-import { getCurrentBusinessId } from "@/database/db";
 
 type FinanceTab = "income" | "expense";
 
@@ -82,33 +80,13 @@ export default function FinanceScreen() {
   const [editingExpenseId, setEditingExpenseId] = useState<string | null>(null);
 
   const loadData = useCallback(async (reset = true) => {
-    // Load sales data for income calculation (always fresh)
-    const salesData = await StockStore.getSalesHistory();
-    setSales(salesData);
-
     const now = new Date();
 
-    // Apply date filter to sales if active
-    const filteredSales = salesData.filter((s) => {
-      if (showFromDate && s.timestamp < showFromDate) return false;
-      if (showToDate && s.timestamp > showToDate) return false;
-      return true;
-    });
+    // Load recent sales for display (limited set)
+    const recentSales = await StockStore.getRecentSales(50);
+    setSales(recentSales);
 
-    const salesIncome = filteredSales
-      .filter(
-        (s) =>
-          s.timestamp.getMonth() === now.getMonth() &&
-          s.timestamp.getFullYear() === now.getFullYear(),
-      )
-      .reduce((sum, s) => sum + s.total, 0);
-
-    // Load all-time profit analytics
-    const bizId = await getCurrentBusinessId();
-    const profit = await getProfitAnalytics(bizId);
-    setProfitData(profit);
-
-    // Load monthly income total from DB (not from paginated data)
+    // Load monthly income total from DB
     const monthlyIncomeTotal = await StockStore.getMonthlyIncomeTotal(now.getFullYear(), now.getMonth() + 1);
     setMonthlyIncome(monthlyIncomeTotal);
 
@@ -180,15 +158,6 @@ export default function FinanceScreen() {
 
         const manualIncomes = result.data;
         setManualIncomes(manualIncomes);
-
-        const manualIncome = manualIncomes
-          .filter(
-            (i) =>
-              i.timestamp.getMonth() === now.getMonth() &&
-              i.timestamp.getFullYear() === now.getFullYear(),
-          )
-          .reduce((sum, i) => sum + i.amount, 0);
-        setMonthlyIncome(salesIncome + manualIncome);
 
         setFilteredIncomes(manualIncomes);
         setIncomeCursor(result.cursor);
@@ -477,14 +446,6 @@ export default function FinanceScreen() {
     EXPENSE_TYPES.find((e) => e.key === t)?.label || t;
   const getExpenseTypeIcon = (t: ExpenseType) =>
     EXPENSE_TYPES.find((e) => e.key === t)?.icon || "receipt";
-
-  // Use getProfitAnalytics for COGS-based profit calculation
-  const [profitData, setProfitData] = useState<{ totalRevenue: number; totalCost: number; totalProfit: number; profitMargin: number }>({
-    totalRevenue: 0,
-    totalCost: 0,
-    totalProfit: 0,
-    profitMargin: 0,
-  });
 
   // Non-stock expenses for display
   const totalNonStockExpenses = expenses

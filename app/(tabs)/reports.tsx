@@ -12,6 +12,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { StockStore } from "@/store/StockStore";
+import { SaleDB, ExpenseDB, IncomeDB, getCurrentBusinessId } from "@/database/db";
 
 const MONTHS = [
   "January",
@@ -48,88 +49,51 @@ export default function ReportsScreen() {
   const [topProducts, setTopProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [businessId, setBusinessId] = useState<string>("");
+
+  useEffect(() => {
+    const loadBiz = async () => {
+      const biz = await getCurrentBusinessId();
+      setBusinessId(biz);
+    };
+    loadBiz();
+  }, []);
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
-    const sales = await StockStore.getSalesHistory();
-    const expenses = await StockStore.getExpenses();
-    const incomes = await StockStore.getIncomes();
 
-    // Monthly sales income
-    const monthSales = sales.filter(
-      (s) =>
-        s.timestamp.getMonth() === selectedMonth &&
-        s.timestamp.getFullYear() === selectedYear,
-    );
-    const mSalesIncome = monthSales.reduce((sum, s) => sum + s.total, 0);
-
-    // Monthly manual income
-    const mManualIncome = incomes
-      .filter(
-        (inc) =>
-          inc.timestamp.getMonth() === selectedMonth &&
-          inc.timestamp.getFullYear() === selectedYear,
-      )
-      .reduce((sum, inc) => sum + inc.amount, 0);
+    // Use server-side aggregation instead of loading ALL data
+    const mSalesIncome = await SaleDB.getMonthlyTotal(businessId, selectedYear, selectedMonth + 1);
+    const mManualIncome = await IncomeDB.getMonthlyTotal(businessId, selectedYear, selectedMonth + 1);
 
     setMonthlySalesIncome(mSalesIncome + mManualIncome);
-    setSalesCount(monthSales.length);
 
     // Monthly stock purchases (cash spent on inventory this month)
-    const mStockPurchases = expenses
-      .filter(
-        (e) =>
-          e.expenseType === "stock" &&
-          e.timestamp.getMonth() === selectedMonth &&
-          e.timestamp.getFullYear() === selectedYear,
-      )
-      .reduce((sum, e) => sum + e.amount, 0);
+    const mStockPurchases = await ExpenseDB.getMonthlyTotalByType(businessId, selectedYear, selectedMonth + 1, 'stock');
     setMonthlyStockPurchases(mStockPurchases);
 
-    // Monthly expenses (manual non-stock only + COGS)
-    const mStockCost = await StockStore.getMonthlyStockCost(
-      selectedYear,
-      selectedMonth + 1,
-    );
+    // Monthly stock cost (COGS)
+    const mStockCost = await StockStore.getMonthlyStockCost(selectedYear, selectedMonth + 1);
     setMonthlyStockCost(mStockCost);
-    const mNonStockExpenses = expenses
-      .filter(
-        (e) =>
-          e.expenseType !== "stock" && // Exclude stock purchases (they're tracked separately)
-          e.timestamp.getMonth() === selectedMonth &&
-          e.timestamp.getFullYear() === selectedYear,
-      )
-      .reduce((sum, e) => sum + e.amount, 0);
-    setMonthlyExpenses(mNonStockExpenses + mStockCost);
+
+    // Monthly non-stock expenses
+    const mExpenses = await ExpenseDB.getMonthlyTotal(businessId, selectedYear, selectedMonth + 1);
+    setMonthlyExpenses(mExpenses + mStockCost);
 
     // Yearly totals
-    const yearSales = sales.filter(
-      (s) => s.timestamp.getFullYear() === selectedYear,
-    );
-    const yearSalesIncome = yearSales.reduce((sum, s) => sum + s.total, 0);
-
-    // Yearly manual income
-    const yearManualIncome = incomes
-      .filter((inc) => inc.timestamp.getFullYear() === selectedYear)
-      .reduce((sum, inc) => sum + inc.amount, 0);
-
+    const yearSalesIncome = await SaleDB.getYearlyTotal(businessId, selectedYear);
+    const yearManualIncome = await IncomeDB.getYearlyTotal(businessId, selectedYear);
     setYearlyIncome(yearSalesIncome + yearManualIncome);
-    const yearNonStockExpenses = expenses
-      .filter(
-        (e) => e.expenseType !== "stock" && e.timestamp.getFullYear() === selectedYear,
-      )
-      .reduce((sum, e) => sum + e.amount, 0);
+
+    const yearExpenses = await ExpenseDB.getYearlyTotal(businessId, selectedYear);
     const yearStockCost = await StockStore.getYearlyStockCost(selectedYear);
-    setYearlyExpense(yearNonStockExpenses + yearStockCost);
+    setYearlyExpense(yearExpenses + yearStockCost);
 
     // Top products
-    const tops = await StockStore.getTopProducts(
-      selectedYear,
-      selectedMonth + 1,
-    );
+    const tops = await StockStore.getTopProducts(selectedYear, selectedMonth + 1);
     setTopProducts(tops || []);
     setIsLoading(false);
-  }, [selectedYear, selectedMonth]);
+  }, [selectedYear, selectedMonth, businessId]);
 
   useEffect(() => {
     loadData();

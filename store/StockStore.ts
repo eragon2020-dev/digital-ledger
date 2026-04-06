@@ -418,6 +418,11 @@ export const StockStore = {
     return await SaleDB.getMonthlySalesCount(businessId, year, month);
   },
 
+  getTotalByPaymentStatus: async (): Promise<{ paid: number; unpaid: number }> => {
+    const businessId = await getCurrentBusinessId();
+    return await SaleDB.getTotalByPaymentStatus(businessId);
+  },
+
   getTopProducts: async (year: number, month: number) => {
     const businessId = await getCurrentBusinessId();
     return await SaleDB.getTopProducts(businessId, year, month);
@@ -440,6 +445,7 @@ export const StockStore = {
   },
 
   getIncomes: async (): Promise<IncomeRecord[]> => {
+    const businessId = await getCurrentBusinessId();
     const rows = await IncomeDB.getAll(businessId);
     return rows.map((row: any) => ({
       id: row.id,

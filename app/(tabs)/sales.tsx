@@ -369,7 +369,7 @@ export default function SalesScreen() {
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
-  ), [colors]);
+  ), [colors, handleShare]);
 
   // Footer for loading more
   const renderFooter = () => {

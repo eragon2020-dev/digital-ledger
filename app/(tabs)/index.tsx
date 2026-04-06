@@ -117,15 +117,10 @@ export default function DashboardScreen() {
         )
         .reduce((sum, e) => sum + e.amount, 0);
 
-      // Calculate paid (cash + transfer) and pending (dharani/credit)
-      const paid = salesData
-        .filter((s) => s.paymentMethod === "cash" || s.paymentMethod === "transfer")
-        .reduce((sum, s) => sum + s.total, 0);
-      const pending = salesData
-        .filter((s) => s.paymentMethod === "dharani")
-        .reduce((sum, s) => sum + s.total, 0);
-      setPaidAmount(paid);
-      setPendingAmount(pending);
+      // Calculate paid and pending from DB (all sales, not just recent 20)
+      const paymentTotals = await StockStore.getTotalByPaymentStatus();
+      setPaidAmount(paymentTotals.paid);
+      setPendingAmount(paymentTotals.unpaid);
 
       // Don't throw - let the app continue with partial data
     } catch (error) {

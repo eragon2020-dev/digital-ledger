@@ -1272,13 +1272,32 @@ export const SaleDB = {
   async getMonthlyTotal(businessId: string, year: number, month: number) {
     const database = getDb();
     const result = await database.getFirstAsync<{ total: number }>(
-      `SELECT SUM(total) as total FROM sales
+      `SELECT COALESCE(SUM(total), 0) as total FROM sales
        WHERE business_id = ? AND STRFTIME('%Y', timestamp) = ? AND STRFTIME('%m', timestamp) = ?`,
-      businessId,
-      String(year),
-      String(month).padStart(2, '0')
+      businessId, String(year), String(month).padStart(2, '0')
     );
     return result?.total ?? 0;
+  },
+
+  async getYearlyTotal(businessId: string, year: number) {
+    const database = getDb();
+    const result = await database.getFirstAsync<{ total: number }>(
+      `SELECT COALESCE(SUM(total), 0) as total FROM sales
+       WHERE business_id = ? AND STRFTIME('%Y', timestamp) = ?`,
+      businessId, String(year)
+    );
+    return result?.total ?? 0;
+  },
+
+  async getTotalByPaymentStatus(businessId: string) {
+    const database = getDb();
+    const result = await database.getAllAsync<{ payment_status: string; total: number }>(
+      `SELECT payment_status, COALESCE(SUM(total), 0) as total FROM sales WHERE business_id = ? GROUP BY payment_status`,
+      businessId
+    );
+    const paid = result?.find(r => r.payment_status === 'paid')?.total ?? 0;
+    const unpaid = result?.find(r => r.payment_status === 'unpaid')?.total ?? 0;
+    return { paid, unpaid };
   },
 
   async getMonthlyIncomeTotal(businessId: string, year: number, month: number) {
@@ -1439,6 +1458,36 @@ export const ExpenseDB = {
     return result?.count ?? 0;
   },
 
+  async getMonthlyTotal(businessId: string, year: number, month: number) {
+    const database = getDb();
+    const result = await database.getFirstAsync<{ total: number }>(
+      `SELECT COALESCE(SUM(amount), 0) as total FROM expenses
+       WHERE business_id = ? AND STRFTIME('%Y', timestamp) = ? AND STRFTIME('%m', timestamp) = ?`,
+      businessId, String(year), String(month).padStart(2, '0')
+    );
+    return result?.total ?? 0;
+  },
+
+  async getMonthlyTotalByType(businessId: string, year: number, month: number, expenseType: string) {
+    const database = getDb();
+    const result = await database.getFirstAsync<{ total: number }>(
+      `SELECT COALESCE(SUM(amount), 0) as total FROM expenses
+       WHERE business_id = ? AND expense_type = ? AND STRFTIME('%Y', timestamp) = ? AND STRFTIME('%m', timestamp) = ?`,
+      businessId, expenseType, String(year), String(month).padStart(2, '0')
+    );
+    return result?.total ?? 0;
+  },
+
+  async getYearlyTotal(businessId: string, year: number) {
+    const database = getDb();
+    const result = await database.getFirstAsync<{ total: number }>(
+      `SELECT COALESCE(SUM(amount), 0) as total FROM expenses
+       WHERE business_id = ? AND STRFTIME('%Y', timestamp) = ?`,
+      businessId, String(year)
+    );
+    return result?.total ?? 0;
+  },
+
   async create(expense: {
     id: string;
     businessId: string;
@@ -1577,6 +1626,16 @@ export const IncomeDB = {
     return result?.total ?? 0;
   },
 
+  async getYearlyTotal(businessId: string, year: number) {
+    const database = getDb();
+    const result = await database.getFirstAsync<{ total: number }>(
+      `SELECT COALESCE(SUM(amount), 0) as total FROM income
+       WHERE business_id = ? AND STRFTIME('%Y', timestamp) = ?`,
+      businessId, String(year)
+    );
+    return result?.total ?? 0;
+  },
+
   async getTotal(businessId: string) {
     const database = getDb();
     const result = await database.getFirstAsync<{ total: number }>(
@@ -1597,18 +1656,6 @@ export const IncomeDB = {
   async delete(id: string) {
     const database = getDb();
     await database.runAsync('DELETE FROM income WHERE id = ?', id);
-  },
-
-  async getMonthlyTotal(businessId: string, year: number, month: number) {
-    const database = getDb();
-    const result = await database.getFirstAsync<{ total: number }>(
-      `SELECT SUM(amount) as total FROM income
-       WHERE business_id = ? AND STRFTIME('%Y', timestamp) = ? AND STRFTIME('%m', timestamp) = ?`,
-      businessId,
-      String(year),
-      String(month).padStart(2, '0')
-    );
-    return result?.total ?? 0;
   },
 };
 
