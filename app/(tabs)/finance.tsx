@@ -87,7 +87,15 @@ export default function FinanceScreen() {
     setSales(salesData);
 
     const now = new Date();
-    const salesIncome = salesData
+
+    // Apply date filter to sales if active
+    const filteredSales = salesData.filter((s) => {
+      if (showFromDate && s.timestamp < showFromDate) return false;
+      if (showToDate && s.timestamp > showToDate) return false;
+      return true;
+    });
+
+    const salesIncome = filteredSales
       .filter(
         (s) =>
           s.timestamp.getMonth() === now.getMonth() &&
@@ -99,6 +107,10 @@ export default function FinanceScreen() {
     const bizId = await getCurrentBusinessId();
     const profit = await getProfitAnalytics(bizId);
     setProfitData(profit);
+
+    // Load monthly income total from DB (not from paginated data)
+    const monthlyIncomeTotal = await StockStore.getMonthlyIncomeTotal(now.getFullYear(), now.getMonth() + 1);
+    setMonthlyIncome(monthlyIncomeTotal);
 
     // Load paginated expenses
     if (reset) {
@@ -211,9 +223,11 @@ export default function FinanceScreen() {
     }
   }, [activeTab, showFromDate, showToDate, expenseCursor, incomeCursor]);
 
+  // Initial load only - don't re-fire on every loadData change
   useEffect(() => {
     loadData();
-  }, [loadData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Reload data when screen comes into focus (e.g., after adding inventory)
   useFocusEffect(
@@ -413,6 +427,10 @@ export default function FinanceScreen() {
     await StockStore.deleteIncome(id);
     setManualIncomes(prev => prev.filter(i => i.id !== id));
     setFilteredIncomes(prev => prev.filter(i => i.id !== id));
+    // Recalculate monthly income after delete
+    const now = new Date();
+    const updatedMonthlyIncome = await StockStore.getMonthlyIncomeTotal(now.getFullYear(), now.getMonth() + 1);
+    setMonthlyIncome(updatedMonthlyIncome);
     showToast({
       message: `"${inc.title}" deleted`,
       actionLabel: "Undo",

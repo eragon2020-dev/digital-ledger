@@ -491,6 +491,23 @@ export const ProductDB = {
     return result?.count ?? 0;
   },
 
+  async existsByName(businessId: string, name: string, excludeId?: string): Promise<boolean> {
+    const database = getDb();
+    let whereClause = 'WHERE business_id = ? AND name = ?';
+    const params: any[] = [businessId, name];
+
+    if (excludeId) {
+      whereClause += ' AND id != ?';
+      params.push(excludeId);
+    }
+
+    const result = await database.getFirstAsync<{ count: number }>(
+      `SELECT COUNT(*) as count FROM products ${whereClause}`,
+      ...params
+    );
+    return (result?.count ?? 0) > 0;
+  },
+
   async getLowStock(businessId: string, threshold: number = 5, limit: number = 50): Promise<PaginatedResult<any>> {
     const database = getDb();
     const query = `SELECT * FROM products WHERE business_id = ? AND product_type = 'item' AND stock <= ? ORDER BY stock ASC LIMIT ${limit + 1}`;
@@ -931,22 +948,41 @@ export const SaleDB = {
       params.push(cursor);
     }
 
-    // Get sales with their items in one query
-    const query = `
-      SELECT 
-        s.id as sale_id, s.business_id, s.subtotal, s.tax, s.tax_rate, s.total, 
-        s.payment_method, s.payment_status, s.timestamp, s.created_at,
-        si.id as item_id, si.product_id, si.product_name, si.price as item_price, 
-        si.quantity, si.total as item_total, si.buy_price
+    // First, get sale IDs at the sale level (not row level)
+    const saleIdsQuery = `
+      SELECT DISTINCT s.id as sale_id
       FROM sales s
-      LEFT JOIN sale_items si ON s.id = si.sale_id
       ${whereClause}
       ORDER BY s.id DESC
       LIMIT ${limit + 1}
     `;
-    
-    const result = await database.getAllAsync<any>(query, ...params);
-    
+    const saleIdsResult = await database.getAllAsync<{ sale_id: string }>(saleIdsQuery, ...params);
+    const saleIds = saleIdsResult.map(r => r.sale_id);
+
+    if (saleIds.length === 0) {
+      return { data: [], hasNextPage: false, cursor: undefined };
+    }
+
+    const hasNextPage = saleIds.length > limit;
+    const idsToFetch = hasNextPage ? saleIds.slice(0, limit) : saleIds;
+    const nextCursor = hasNextPage ? idsToFetch[idsToFetch.length - 1] : undefined;
+
+    // Now fetch all items for those sale IDs in one query
+    const placeholders = idsToFetch.map(() => '?').join(',');
+    const itemsQuery = `
+      SELECT
+        s.id as sale_id, s.business_id, s.subtotal, s.tax, s.tax_rate, s.total,
+        s.payment_method, s.payment_status, s.timestamp, s.created_at,
+        si.id as item_id, si.product_id, si.product_name, si.price as item_price,
+        si.quantity, si.total as item_total, si.buy_price
+      FROM sales s
+      LEFT JOIN sale_items si ON s.id = si.sale_id
+      WHERE s.id IN (${placeholders})
+      ORDER BY s.id DESC, si.id ASC
+    `;
+
+    const result = await database.getAllAsync<any>(itemsQuery, ...idsToFetch);
+
     // Group items by sale
     const salesMap = new Map<string, any>();
     for (const row of result) {
@@ -980,14 +1016,11 @@ export const SaleDB = {
     }
 
     const sales = Array.from(salesMap.values());
-    const hasNextPage = sales.length > limit;
-    const data = hasNextPage ? sales.slice(0, -1) : sales;
-    const lastItem = data[data.length - 1];
 
     return {
-      data,
+      data: sales,
       hasNextPage,
-      cursor: lastItem?.id,
+      cursor: nextCursor,
     };
   },
 
@@ -1238,6 +1271,21 @@ export const SaleDB = {
       String(month).padStart(2, '0')
     );
     return result?.total ?? 0;
+  },
+
+  async getMonthlyIncomeTotal(businessId: string, year: number, month: number) {
+    const database = getDb();
+    const salesResult = await database.getFirstAsync<{ total: number }>(
+      `SELECT COALESCE(SUM(total), 0) as total FROM sales
+       WHERE business_id = ? AND STRFTIME('%Y', timestamp) = ? AND STRFTIME('%m', timestamp) = ?`,
+      businessId, String(year), String(month).padStart(2, '0')
+    );
+    const incomeResult = await database.getFirstAsync<{ total: number }>(
+      `SELECT COALESCE(SUM(amount), 0) as total FROM income
+       WHERE business_id = ? AND STRFTIME('%Y', timestamp) = ? AND STRFTIME('%m', timestamp) = ?`,
+      businessId, String(year), String(month).padStart(2, '0')
+    );
+    return (salesResult?.total ?? 0) + (incomeResult?.total ?? 0);
   },
 
   async getMonthlyStockCost(businessId: string, year: number, month: number) {

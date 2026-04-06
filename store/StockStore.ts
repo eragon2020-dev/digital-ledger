@@ -1,6 +1,5 @@
 import { ProductDB, SaleDB, ExpenseDB, IncomeDB, SettingsDB, getCurrentBusinessId, getCurrentBusiness, setBusinessCapital, updateBusiness } from '@/database/db';
 import { getDb } from '@/database/database-instance';
-import { queryCache, cachedQuery } from './QueryCache';
 import { CartItem, PaymentMethod, SaleRecord, SoldItem, Product, ExpenseRecord, ExpenseType, PaginatedResult, PaginationOptions } from '@/types';
 
 export interface IncomeRecord {
@@ -75,31 +74,52 @@ export const StockStore = {
 
   getSalesHistory: async (): Promise<SaleRecord[]> => {
     const businessId = await getCurrentBusinessId();
-    const sales = await SaleDB.getAll(businessId);
-    const records: SaleRecord[] = [];
+    const result = await SaleDB.getAllWithItems(businessId);
 
-    for (const sale of sales) {
-      const items = await SaleDB.getItems(sale.id);
-      records.push({
-        id: sale.id,
-        items: items.map((item: any) => ({
-          id: item.product_id,
-          name: item.product_name,
-          price: item.price,
-          quantity: item.quantity,
-          total: item.total,
-        })),
-        subtotal: sale.subtotal,
-        tax: sale.tax,
-        taxRate: sale.tax_rate ?? 0,
-        total: sale.total,
-        paymentMethod: sale.payment_method as PaymentMethod,
-        paymentStatus: (sale.payment_status as 'paid' | 'unpaid') ?? 'paid',
-        timestamp: new Date(sale.timestamp),
-      });
-    }
+    return result.data.map((sale: any) => ({
+      id: sale.id,
+      items: sale.items.map((item: any) => ({
+        id: item.product_id,
+        name: item.product_name,
+        price: item.price,
+        quantity: item.quantity,
+        total: item.total,
+        buyPrice: item.buy_price,
+      })),
+      subtotal: sale.subtotal,
+      tax: sale.tax,
+      taxRate: sale.tax_rate ?? 0,
+      total: sale.total,
+      paymentMethod: sale.payment_method as PaymentMethod,
+      paymentStatus: (sale.payment_status as 'paid' | 'unpaid') ?? 'paid',
+      timestamp: new Date(sale.timestamp),
+    }));
+  },
 
-    return records;
+  getSaleById: async (saleId: string): Promise<SaleRecord | null> => {
+    const businessId = await getCurrentBusinessId();
+    const sale = await SaleDB.getById(saleId);
+    if (!sale) return null;
+
+    const items = await SaleDB.getItems(saleId);
+    return {
+      id: sale.id,
+      items: items.map((item: any) => ({
+        id: item.product_id,
+        name: item.product_name,
+        price: item.price,
+        quantity: item.quantity,
+        total: item.total,
+        buyPrice: item.buy_price,
+      })),
+      subtotal: sale.subtotal,
+      tax: sale.tax,
+      taxRate: sale.tax_rate ?? 0,
+      total: sale.total,
+      paymentMethod: sale.payment_method as PaymentMethod,
+      paymentStatus: (sale.payment_status as 'paid' | 'unpaid') ?? 'paid',
+      timestamp: new Date(sale.timestamp),
+    };
   },
 
   createSale: async (
@@ -184,8 +204,7 @@ export const StockStore = {
     };
 
     // Invalidate caches
-    queryCache.clearMatching('sales');
-    queryCache.clearMatching('count');
+    // Cache cleared - no longer using queryCache
 
     return sale;
   },
@@ -194,8 +213,7 @@ export const StockStore = {
     try {
       await SaleDB.delete(saleId);
       // Invalidate all sales and count caches
-      queryCache.clearMatching('sales');
-      queryCache.clearMatching('count');
+      // Cache cleared - no longer using queryCache
       return true;
     } catch (error) {
       console.error('Error deleting sale:', error);
@@ -359,8 +377,7 @@ export const StockStore = {
   deleteProduct: async (id: string): Promise<boolean> => {
     try {
       await ProductDB.delete(id);
-      queryCache.clearMatching('products');
-      queryCache.clearMatching('count');
+      // Cache cleared - no longer using queryCache
       return true;
     } catch {
       return false;
@@ -452,7 +469,7 @@ export const StockStore = {
     );
   },
 
-  getMonthlyIncomeTotal: async (year: number, month: number): Promise<number> => {
+  getMonthlyManualIncomeTotal: async (year: number, month: number): Promise<number> => {
     const businessId = await getCurrentBusinessId();
     return await IncomeDB.getMonthlyTotal(businessId, year, month);
   },
@@ -466,7 +483,10 @@ export const StockStore = {
     await SettingsDB.set(key, value);
   },
 
-  // Capital settings (now per business)
+  productExists: async (name: string, excludeId?: string): Promise<boolean> => {
+    const businessId = await getCurrentBusinessId();
+    return await ProductDB.existsByName(businessId, name, excludeId);
+  },
   getCapital: async (): Promise<number> => {
     const business = await getCurrentBusiness();
     return business?.capital ?? 0;
@@ -536,6 +556,11 @@ export const StockStore = {
       businessId
     );
     return result?.total ?? 0;
+  },
+
+  getMonthlyIncomeTotal: async (year: number, month: number): Promise<number> => {
+    const businessId = await getCurrentBusinessId();
+    return await SaleDB.getMonthlyIncomeTotal(businessId, year, month);
   },
 
   getLowStockCount: async (threshold: number = 5): Promise<number> => {

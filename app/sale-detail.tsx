@@ -75,6 +75,8 @@ export default function SaleDetailScreen() {
   const total = subtotal + tax;
 
   const updateQuantity = async (productId: string, delta: number) => {
+    if (!sale) return;
+
     const products = await StockStore.getProducts();
     const product = products.find((p) => p.id === productId);
     const isService = product?.productType === 'service';

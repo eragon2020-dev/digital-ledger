@@ -139,7 +139,7 @@ export default function DashboardScreen() {
       console.log('loadData: Complete');
     } catch (error) {
       console.error('loadData: Error occurred:', error);
-      throw error;
+      // Don't throw - let the app continue with partial data
     }
   }, [isReady]);
 

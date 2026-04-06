@@ -118,14 +118,21 @@ export async function updateBusiness(id: string, data: {
  */
 export async function deleteBusiness(id: string): Promise<void> {
   const db = getDb();
-  
+
   // Prevent deleting the last business
   const all = await getAllBusinesses();
   if (all.length <= 1) {
     throw new Error('Cannot delete the only business');
   }
 
-  // Delete all related data (foreign keys with CASCADE should handle this)
+  // Delete all related data explicitly (foreign keys are disabled)
+  await db.runAsync('DELETE FROM products WHERE business_id = ?', id);
+  await db.runAsync('DELETE FROM sale_items WHERE sale_id IN (SELECT id FROM sales WHERE business_id = ?)', id);
+  await db.runAsync('DELETE FROM sales WHERE business_id = ?', id);
+  await db.runAsync('DELETE FROM expenses WHERE business_id = ?', id);
+  await db.runAsync('DELETE FROM income WHERE business_id = ?', id);
+
+  // Finally delete the business
   await db.runAsync('DELETE FROM businesses WHERE id = ?', id);
 
   // If we deleted the current business, switch to another

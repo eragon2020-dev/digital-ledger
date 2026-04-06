@@ -164,8 +164,14 @@ export async function createBackup(): Promise<string> {
   const fileName = `yasir_backup_${dateStr}_${timeStr}.zip`;
   const cacheUri = `${getTempDir()}${fileName}`;
 
-  let binary = '';
-  for (let i = 0; i < zipData.length; i++) binary += String.fromCharCode(zipData[i]);
+  // Use chunked encoding to avoid O(n²) string concatenation
+  const CHUNK_SIZE = 8192;
+  const chunks: string[] = [];
+  for (let i = 0; i < zipData.length; i += CHUNK_SIZE) {
+    const chunk = zipData.subarray(i, i + CHUNK_SIZE);
+    chunks.push(String.fromCharCode.apply(null, Array.from(chunk)));
+  }
+  const binary = chunks.join('');
   const base64 = btoa(binary);
 
   await FileSystemLegacy.writeAsStringAsync(cacheUri, base64, { encoding: FileSystemLegacy.EncodingType.Base64 });
@@ -184,9 +190,16 @@ export async function pickBackupFile(): Promise<string | null> {
 
 export async function restoreFromZip(fileUri: string): Promise<void> {
   const base64 = await FileSystemLegacy.readAsStringAsync(fileUri, { encoding: FileSystemLegacy.EncodingType.Base64 });
+  // Use chunked decoding to avoid O(n²) string operations
+  const CHUNK_SIZE = 8192;
   const binaryString = atob(base64);
   const zipData = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) zipData[i] = binaryString.charCodeAt(i);
+  for (let i = 0; i < binaryString.length; i += CHUNK_SIZE) {
+    const chunk = binaryString.slice(i, i + CHUNK_SIZE);
+    for (let j = 0; j < chunk.length; j++) {
+      zipData[i + j] = chunk.charCodeAt(j);
+    }
+  }
 
   const files = unzipSync(zipData);
   const jsonFile = files['yasir_backup.json'];

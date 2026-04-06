@@ -27,7 +27,6 @@ function ProductForm({
   product,
   onSave,
   onCancel,
-  existingProducts,
 }: {
   product: Product | null;
   onSave: (data: {
@@ -39,7 +38,6 @@ function ProductForm({
     productType: ProductType;
   }) => void;
   onCancel: () => void;
-  existingProducts: Product[];
 }) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
@@ -54,7 +52,7 @@ function ProductForm({
     product?.productType ?? "item",
   );
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name.trim()) {
       Alert.alert("Error", "Name is required");
       return;
@@ -64,15 +62,13 @@ function ProductForm({
       Alert.alert("Error", "Sell Price is required");
       return;
     }
-    // Check for duplicate name (case-insensitive)
-    const trimmedName = name.trim().toLowerCase();
-    const duplicate = existingProducts.find(
-      (p) => p.name.toLowerCase() === trimmedName && p.id !== product?.id,
-    );
-    if (duplicate) {
+    // Check for duplicate name at DB level (not just current page)
+    const trimmedName = name.trim();
+    const duplicateExists = await StockStore.productExists(trimmedName, product?.id);
+    if (duplicateExists) {
       Alert.alert(
         "Error",
-        `A product named "${duplicate.name}" already exists`,
+        `A product named "${trimmedName}" already exists`,
       );
       return;
     }
@@ -575,7 +571,6 @@ export default function InventoryScreen() {
             product={null}
             onSave={handleAddProduct}
             onCancel={() => setShowAddForm(false)}
-            existingProducts={products}
           />
         </View>
       )}
@@ -846,7 +841,6 @@ export default function InventoryScreen() {
                     product={product}
                     onSave={(data) => handleUpdateProduct(product, data)}
                     onCancel={() => setExpandedId(null)}
-                    existingProducts={products}
                   />
                 </View>
               )}

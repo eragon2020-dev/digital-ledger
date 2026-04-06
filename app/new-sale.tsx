@@ -330,7 +330,7 @@ export default function NewSaleScreen() {
           </View>
         </View>
 
-        {/* Product Grid - shows all loaded products */}
+        {/* Product Grid - dynamic rows based on loaded products */}
         {products.length === 0 ? (
           <View style={styles.loadingProducts}>
             <Text style={{ color: colors.secondary, fontSize: 14 }}>
@@ -339,109 +339,64 @@ export default function NewSaleScreen() {
           </View>
         ) : (
           <View style={styles.productGrid}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.productGridRow}
-            >
-              {filteredProducts.slice(0, 6).map((product, idx) => {
-                const inCart = cart.find((c) => c.id === product.id);
-                const isService = product.productType === 'service';
-                const outOfStock = !isService && product.stock === 0;
-                return (
-                  <TouchableOpacity
-                    key={product.id}
-                    style={[
-                      styles.productCard,
-                      {
-                        backgroundColor: colors.surfaceContainerLowest,
-                        opacity: outOfStock ? 0.5 : 1,
-                        borderWidth: inCart ? 2 : 1,
-                        borderColor: inCart ? colors.primary : `${colors.outline}15`,
-                      },
-                    ]}
-                    activeOpacity={0.7}
-                    onPress={() => !outOfStock && addToCart(product.id)}
-                    disabled={outOfStock}
-                  >
-                    <View style={[styles.productImage, { backgroundColor: colors.surfaceContainer, alignItems: 'center', justifyContent: 'center' }]}>
-                      {product.image ? (
-                        <Image source={{ uri: product.image }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
-                      ) : (
-                        <MaterialIcons name="image" size={40} color={colors.outline} />
-                      )}
-                      {!isService && outOfStock && (
-                        <View style={styles.outOfStockOverlay}>
-                          <Text style={styles.outOfStockText}>Out of Stock</Text>
+            {Array.from({ length: Math.ceil(filteredProducts.length / 6) }).map((_, rowIdx) => {
+              const rowProducts = filteredProducts.slice(rowIdx * 6, (rowIdx + 1) * 6);
+              return (
+                <ScrollView
+                  key={rowIdx}
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.productGridRow}
+                  style={rowIdx > 0 ? { marginTop: 10 } : undefined}
+                >
+                  {rowProducts.map((product) => {
+                    const inCart = cart.find((c) => c.id === product.id);
+                    const isService = product.productType === 'service';
+                    const outOfStock = !isService && product.stock === 0;
+                    return (
+                      <TouchableOpacity
+                        key={product.id}
+                        style={[
+                          styles.productCard,
+                          {
+                            backgroundColor: colors.surfaceContainerLowest,
+                            opacity: outOfStock ? 0.5 : 1,
+                            borderWidth: inCart ? 2 : 1,
+                            borderColor: inCart ? colors.primary : `${colors.outline}15`,
+                          },
+                        ]}
+                        activeOpacity={0.7}
+                        onPress={() => !outOfStock && addToCart(product.id)}
+                        disabled={outOfStock}
+                      >
+                        <View style={[styles.productImage, { backgroundColor: colors.surfaceContainer, alignItems: 'center', justifyContent: 'center' }]}>
+                          {product.image ? (
+                            <Image source={{ uri: product.image }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
+                          ) : (
+                            <MaterialIcons name="image" size={40} color={colors.outline} />
+                          )}
+                          {!isService && outOfStock && (
+                            <View style={styles.outOfStockOverlay}>
+                              <Text style={styles.outOfStockText}>Out of Stock</Text>
+                            </View>
+                          )}
+                          <View style={[styles.stockBadge, { backgroundColor: isService ? colors.primary : (outOfStock ? colors.tertiary : colors.primary) }]}>
+                            <Text style={styles.stockBadgeText}>{isService ? '∞' : product.stock}</Text>
+                          </View>
                         </View>
-                      )}
-                      <View style={[styles.stockBadge, { backgroundColor: isService ? colors.primary : (outOfStock ? colors.tertiary : colors.primary) }]}>
-                        <Text style={styles.stockBadgeText}>{isService ? '∞' : product.stock}</Text>
-                      </View>
-                    </View>
-                    <Text style={[styles.productName, { color: colors.onSurface }]} numberOfLines={2}>{product.name}</Text>
-                    <Text style={styles.productPrice}>MVR {product.price.toFixed(2)}</Text>
-                    {inCart && (
-                      <View style={[styles.inCartBadge, { backgroundColor: colors.primary }]}>
-                        <Text style={styles.inCartBadgeText}>{inCart.quantity} in cart</Text>
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.productGridRow}
-              style={{ marginTop: 10 }}
-            >
-              {filteredProducts.slice(6, 12).map((product) => {
-                const inCart = cart.find((c) => c.id === product.id);
-                const isService = product.productType === 'service';
-                const outOfStock = !isService && product.stock === 0;
-                return (
-                  <TouchableOpacity
-                    key={product.id}
-                    style={[
-                      styles.productCard,
-                      {
-                        backgroundColor: colors.surfaceContainerLowest,
-                        opacity: outOfStock ? 0.5 : 1,
-                        borderWidth: inCart ? 2 : 1,
-                        borderColor: inCart ? colors.primary : `${colors.outline}15`,
-                      },
-                    ]}
-                    activeOpacity={0.7}
-                    onPress={() => !outOfStock && addToCart(product.id)}
-                    disabled={outOfStock}
-                  >
-                    <View style={[styles.productImage, { backgroundColor: colors.surfaceContainer, alignItems: 'center', justifyContent: 'center' }]}>
-                      {product.image ? (
-                        <Image source={{ uri: product.image }} style={{ width: '100%', height: '100%' }} resizeMode="cover" />
-                      ) : (
-                        <MaterialIcons name="image" size={40} color={colors.outline} />
-                      )}
-                      {!isService && outOfStock && (
-                        <View style={styles.outOfStockOverlay}>
-                          <Text style={styles.outOfStockText}>Out of Stock</Text>
-                        </View>
-                      )}
-                      <View style={[styles.stockBadge, { backgroundColor: isService ? colors.primary : (outOfStock ? colors.tertiary : colors.primary) }]}>
-                        <Text style={styles.stockBadgeText}>{isService ? '∞' : product.stock}</Text>
-                      </View>
-                    </View>
-                    <Text style={[styles.productName, { color: colors.onSurface }]} numberOfLines={2}>{product.name}</Text>
-                    <Text style={styles.productPrice}>MVR {product.price.toFixed(2)}</Text>
-                    {inCart && (
-                      <View style={[styles.inCartBadge, { backgroundColor: colors.primary }]}>
-                        <Text style={styles.inCartBadgeText}>{inCart.quantity} in cart</Text>
-                      </View>
-                    )}
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
+                        <Text style={[styles.productName, { color: colors.onSurface }]} numberOfLines={2}>{product.name}</Text>
+                        <Text style={styles.productPrice}>MVR {product.price.toFixed(2)}</Text>
+                        {inCart && (
+                          <View style={[styles.inCartBadge, { backgroundColor: colors.primary }]}>
+                            <Text style={styles.inCartBadgeText}>{inCart.quantity} in cart</Text>
+                          </View>
+                        )}
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
+              );
+            })}
           </View>
         )}
 
