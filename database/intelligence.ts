@@ -116,27 +116,27 @@ export async function generateMonthlyAnalysis(
 
   if (productStats.highVolumeLowMargin.length > 0) {
     for (const p of productStats.highVolumeLowMargin.slice(0, 3)) {
-      const suggestedPrice = Math.ceil(p.buyPrice * 1.5);
+      const suggestedPrice = Math.ceil(p.buy_price * 1.5);
       insights.push({
         type: 'topProduct',
         priority: 'warning',
         title: `${p.name}: high sales, low margin`,
         detail: `Sold ${p.unitsSold} units but only ${p.marginPct.toFixed(0)}% margin. You're moving volume but not earning much per unit.`,
-        suggestion: `Consider raising price to MVR ${suggestedPrice} — you'd earn MVR ${fmt((suggestedPrice - p.buyPrice) * p.unitsSold)} instead of MVR ${fmt((p.price - p.buyPrice) * p.unitsSold)}.`,
+        suggestion: `Consider raising price to MVR ${suggestedPrice} — you'd earn MVR ${fmt((suggestedPrice - p.buy_price) * p.unitsSold)} instead of MVR ${fmt((p.price - p.buy_price) * p.unitsSold)}.`,
       });
     }
   }
 
   // === 3. DEAD STOCK ===
   for (const p of productStats.deadStock) {
-    const tiedUp = p.buyPrice * p.stock;
+    const tiedUp = p.buy_price * p.stock;
     insights.push({
       type: 'deadStock',
       priority: 'danger',
       title: `${p.name} — dead stock`,
       detail: `0 sales in 30+ days. MVR ${fmt(tiedUp)} tied up in ${p.stock} unsold units.`,
-      suggestion: p.buyPrice > 0
-        ? `Discount to MVR ${Math.ceil(p.buyPrice)} (break even) or return to supplier. Free up MVR ${fmt(tiedUp)} in capital.`
+      suggestion: p.buy_price > 0
+        ? `Discount to MVR ${Math.ceil(p.buy_price)} (break even) or return to supplier. Free up MVR ${fmt(tiedUp)} in capital.`
         : `Clear it out — it's taking up space with no return.`,
     });
     actions.push({
@@ -164,7 +164,7 @@ export async function generateMonthlyAnalysis(
       type: 'price-review',
       title: `Review ${p.name} pricing`,
       detail: `Margin crashed from ${p.lastMargin.toFixed(0)}% to ${p.currentMargin.toFixed(0)}%`,
-      suggestion: `Raise price to MVR ${Math.ceil(p.buyPrice / (1 - Math.max(p.lastMargin, 40) / 100))} to restore margin`,
+      suggestion: `Raise price to MVR ${Math.ceil(p.buy_price / (1 - Math.max(p.lastMargin, 40) / 100))} to restore margin`,
     });
   }
 
@@ -248,7 +248,7 @@ export async function generateMonthlyAnalysis(
       type: 'reorder',
       title: `Reorder ${p.name}`,
       detail: `${daysLeft} days of stock left (${p.stock} units, selling ~${p.dailySalesRate.toFixed(1)}/day)`,
-      suggestion: `Order ${suggestedOrder} units for next month (~MVR ${fmt(suggestedOrder * p.buyPrice)} cost)`,
+      suggestion: `Order ${suggestedOrder} units for next month (~MVR ${fmt(suggestedOrder * p.buy_price)} cost)`,
     });
   }
 
