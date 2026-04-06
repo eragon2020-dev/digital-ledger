@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -96,6 +96,12 @@ export default function ReportsScreen() {
     // Top products
     const tops = await StockStore.getTopProducts(selectedYear, selectedMonth + 1);
     setTopProducts(tops || []);
+
+    // Sales count for the selected month
+    const fromDate = new Date(selectedYear, selectedMonth, 1);
+    const toDate = new Date(selectedYear, selectedMonth + 1, 0, 23, 59, 59);
+    const count = await StockStore.getSalesCount({ fromDate, toDate });
+    setSalesCount(count);
 
     // Generate monthly business analysis
     const analysis = await generateMonthlyAnalysis(businessId, selectedYear, selectedMonth + 1);

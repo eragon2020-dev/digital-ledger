@@ -1515,29 +1515,6 @@ export const ExpenseDB = {
     const database = getDb();
     await database.runAsync('DELETE FROM expenses WHERE id = ?', id);
   },
-
-  async getMonthlyTotal(businessId: string, year: number, month: number) {
-    const database = getDb();
-    const result = await database.getFirstAsync<{ total: number }>(
-      `SELECT SUM(amount) as total FROM expenses
-       WHERE business_id = ? AND STRFTIME('%Y', timestamp) = ? AND STRFTIME('%m', timestamp) = ?`,
-      businessId,
-      String(year),
-      String(month).padStart(2, '0')
-    );
-    return result?.total ?? 0;
-  },
-
-  async getYearlyTotal(businessId: string, year: number) {
-    const database = getDb();
-    const result = await database.getFirstAsync<{ total: number }>(
-      `SELECT SUM(amount) as total FROM expenses
-       WHERE business_id = ? AND STRFTIME('%Y', timestamp) = ?`,
-      businessId,
-      String(year)
-    );
-    return result?.total ?? 0;
-  },
 };
 
 // Income operations (scoped by business)

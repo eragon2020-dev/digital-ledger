@@ -340,7 +340,7 @@ function ActionsTab({ actions, colors }: { actions: ActionItem[]; colors: any })
             </View>
             <View style={styles.actionContent}>
               <View style={styles.actionTitleRow}>
-                <MaterialIcons name={actionIcons[action.type] || 'task'} size={16} color={typeColors[action.type]} />
+                <MaterialIcons name={actionIcons[action.type] || 'task' as any} size={16} color={typeColors[action.type]} />
                 <Text style={[styles.actionTitle, { color: colors.onSurface }]}>
                   {action.title}
                 </Text>
@@ -378,7 +378,7 @@ function InsightRow({ insight, isExpanded, onToggle, colors }: {
     >
       <View style={styles.insightHeader}>
         <MaterialIcons
-          name={PRIORITY_ICONS[insight.priority]}
+          name={PRIORITY_ICONS[insight.priority] as any}
           size={18}
           color={PRIORITY_COLORS[insight.priority]}
         />

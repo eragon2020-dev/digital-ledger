@@ -1,27 +1,24 @@
-﻿import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 import {
   View,
   Text,
   ScrollView,
-  FlatList,
   TouchableOpacity,
   StyleSheet,
   RefreshControl,
   TextInput,
   Alert,
   Platform,
-  ActivityIndicator,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import { StockStore } from "@/store/StockStore";
+import { StockStore, IncomeRecord } from "@/store/StockStore";
 import { SaleRecord, ExpenseRecord, ExpenseType } from "@/types";
 import { useToast } from "@/providers/ToastProvider";
-import { IncomeRecord } from "@/store/StockStore";
 
 type FinanceTab = "income" | "expense";
 
@@ -444,14 +441,11 @@ export default function FinanceScreen() {
     });
   const getExpenseTypeLabel = (t: ExpenseType) =>
     EXPENSE_TYPES.find((e) => e.key === t)?.label || t;
-  const getExpenseTypeIcon = (t: ExpenseType) =>
-    EXPENSE_TYPES.find((e) => e.key === t)?.icon || "receipt";
 
   // Non-stock expenses for display
   const totalNonStockExpenses = expenses
     .filter((e) => e.expenseType !== "stock")
     .reduce((sum, e) => sum + e.amount, 0);
-  const profit = monthlyIncome - totalNonStockExpenses;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

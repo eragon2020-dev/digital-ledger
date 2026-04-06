@@ -12,7 +12,6 @@ import {
   FlatList,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/use-color-scheme";
@@ -34,7 +33,6 @@ import { getProfitAnalytics } from "@/database/analytics";
 export default function DashboardScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
-  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { isReady } = useDatabase();
 
@@ -150,15 +148,6 @@ export default function DashboardScreen() {
     setShowCapitalEdit(false);
   };
 
-  const saveBusinessName = async () => {
-    const name = businessNameInput.trim();
-    if (currentBusinessId) {
-      await StockStore.setBusinessName(name);
-      setBusinessName(name);
-    }
-    setShowBusinessDropdown(false);
-  };
-
   const switchBusiness = async (bizId: string) => {
     await setCurrentBusinessId(bizId);
     setCurrentBizId(bizId);
@@ -198,11 +187,6 @@ export default function DashboardScreen() {
     } catch (error: any) {
       Alert.alert("Error", error.message || "Failed to delete business");
     }
-  };
-
-  const openBusinessNameEdit = () => {
-    setBusinessNameInput(businessName);
-    setShowBusinessDropdown(true);
   };
 
   const remainingCapital = initialCapital + netProfit;

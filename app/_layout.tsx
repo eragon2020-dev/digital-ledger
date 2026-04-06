@@ -7,7 +7,6 @@ import { View, Text } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import 'react-native-reanimated';
-import 'react-native-gesture-handler';
 
 import { DatabaseProvider, useDatabase } from '@/providers/DatabaseProvider';
 import { ToastProvider } from '@/providers/ToastProvider';

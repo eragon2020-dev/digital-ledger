@@ -648,7 +648,7 @@ export const StockStore = {
   },
 
   // Get product count
-  getProductCount: async (options: { searchQuery?: string } = {}): Promise<number> => {
+  getProductCount: async (options: { searchQuery?: string; lowStock?: boolean } = {}): Promise<number> => {
     const businessId = await getCurrentBusinessId();
     return await ProductDB.getCount(businessId, options);
   },

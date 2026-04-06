@@ -4,7 +4,6 @@
  */
 
 import { getDb } from './database-instance';
-import { getSalesAnalytics } from './analytics';
 import { BusinessInsight, ActionItem, MonthlyAnalysis } from '@/types';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -27,7 +26,7 @@ export async function generateMonthlyAnalysis(
     lastMonthRevenue,
     threeMonthRevenue,
     thisMonthExpenses,
-    lastMonthExpenses,
+    _lastMonthExpenses,
     thisMonthIncome,
     products,
     monthlyStockCost,
@@ -376,9 +375,11 @@ async function analyzeProducts(products: any[], businessId: string, year: number
   }
 
   const totalRevenue = stats.reduce((sum: number, p: any) => sum + p.revenue, 0);
+  // Reference date = end of the selected month
+  const referenceDate = new Date(year, month, 0);
   stats.forEach((p: any) => {
     p.revenueShare = totalRevenue > 0 ? (p.revenue / totalRevenue) * 100 : 0;
-    p.daysSinceLastSale = getLastSaleDays(p.lastMonthSales);
+    p.daysSinceLastSale = getLastSaleDays(p.lastMonthSales, referenceDate);
   });
 
   // Breadwinner: highest revenue share > 25%
@@ -428,11 +429,11 @@ async function analyzeProducts(products: any[], businessId: string, year: number
   return { breadwinner, highVolumeLowMargin, deadStock, marginCrash, lowSellers, reorderNeeded };
 }
 
-function getLastSaleDays(sales: any[]): number {
+function getLastSaleDays(sales: any[], referenceDate: Date): number {
   if (sales.length === 0) return 999;
   const dates = sales.map((s: any) => new Date(s.timestamp).getTime());
   const lastSale = Math.max(...dates);
-  const now = Date.now();
+  const now = referenceDate.getTime();
   return Math.round((now - lastSale) / (1000 * 60 * 60 * 24));
 }
 
@@ -448,13 +449,20 @@ async function analyzeExpenses(businessId: string, year: number, month: number) 
     businessId, String(year), String(month).padStart(2, '0')
   );
 
-  // Get 3-month average by type
+  // Calculate 3-month rolling average by type (based on selected month, not "now")
   const threeMonthAvg = await db.getAllAsync<any>(
-    `SELECT expense_type, COALESCE(SUM(amount), 0) / 3 as avg FROM expenses
+    `SELECT expense_type, COALESCE(SUM(amount), 0) / 3.0 as avg FROM expenses
      WHERE business_id = ?
-     AND timestamp >= datetime('now', '-3 months')
+     AND STRFTIME('%Y-%m', timestamp) BETWEEN ? AND ?
+     AND STRFTIME('%Y-%m', timestamp) != ?
      GROUP BY expense_type`,
-    businessId
+    businessId,
+    // 3 months before the selected month
+    getMonthKey(year, month - 3),
+    // Month before the selected month
+    getMonthKey(year, month - 1),
+    // Exclude the current month from the average
+    getMonthKey(year, month)
   );
 
   const avgMap = new Map<string, number>();
@@ -473,6 +481,15 @@ async function analyzeExpenses(businessId: string, year: number, month: number) 
   }
 
   return anomalies;
+}
+
+/**
+ * Get a YYYY-MM string for a given year and month (handles month overflow)
+ */
+function getMonthKey(year: number, month: number): string {
+  // Handle month overflow (e.g., month 0 = December of previous year)
+  const date = new Date(year, month - 1, 1);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 }
 
 function fmt(n: number): string {

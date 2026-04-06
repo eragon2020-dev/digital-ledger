@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { StockStore } from '@/store/StockStore';
-import { CartItem, PaymentMethod, SaleRecord, SoldItem, Product } from '@/types';
+import { CartItem, PaymentMethod, SaleRecord, Product } from '@/types';
 
 export default function SaleDetailScreen() {
   const colorScheme = useColorScheme();
