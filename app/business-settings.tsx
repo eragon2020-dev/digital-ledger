@@ -40,7 +40,6 @@ export default function BusinessSettingsScreen() {
 
   const loadData = useCallback(async () => {
     const info = await StockStore.getBusinessInfo();
-    console.log("loadData - received info:", info);
     setBusinessName(info.name);
     setNameInput(info.name);
 
@@ -83,14 +82,6 @@ export default function BusinessSettingsScreen() {
   const saveAll = async () => {
     const businessId = await StockStore.getCurrentBusinessId();
     const { updateBusiness } = await import("@/database/db");
-
-    console.log("saveAll - businessId:", businessId);
-    console.log("saveAll - data:", {
-      name: nameInput.trim(),
-      accountNumber: accountNumberInput.trim(),
-      accountName: accountNameInput.trim(),
-      viberNumber: viberNumberInput.trim(),
-    });
 
     await updateBusiness(businessId, {
       name: nameInput.trim(),

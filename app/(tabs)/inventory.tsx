@@ -318,6 +318,7 @@ export default function InventoryScreen() {
         const result = await StockStore.getPaginatedProducts(options);
         const count = await StockStore.getProductCount({
           searchQuery: searchQuery || undefined,
+          lowStock: activeFilter === "low" || undefined,
         });
         setTotalCount(count);
 
@@ -342,7 +343,7 @@ export default function InventoryScreen() {
         console.error("Error loading products:", error);
       }
     },
-    [searchQuery, cursor],
+    [searchQuery, cursor, activeFilter],
   );
 
   const loadMore = useCallback(async () => {
@@ -411,7 +412,7 @@ export default function InventoryScreen() {
 
     // Stock is an asset — no expense created (COGS will be calculated on sale)
     setShowAddForm(false);
-    loadProducts();
+    await loadProducts();
   };
 
   const handleUpdateProduct = async (
@@ -441,7 +442,7 @@ export default function InventoryScreen() {
 
     // No auto expense — COGS is calculated when items are sold
     setExpandedId(null);
-    loadProducts();
+    await loadProducts();
   };
 
   const deleteProduct = (product: Product) => {
@@ -461,7 +462,7 @@ export default function InventoryScreen() {
             return;
           }
           await StockStore.deleteProduct(product.id);
-          loadProducts();
+          await loadProducts();
         },
       },
     ]);
@@ -471,7 +472,7 @@ export default function InventoryScreen() {
     const newQty = product.stock + delta;
     if (newQty < 0) return;
     await StockStore.updateStock(product.id, delta);
-    loadProducts();
+    await loadProducts();
   };
 
   const renderHeaderComponent = () => (

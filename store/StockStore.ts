@@ -434,8 +434,12 @@ export const StockStore = {
   },
 
   // Income methods
-  getIncomes: async (): Promise<IncomeRecord[]> => {
+  getTotalIncome: async (): Promise<number> => {
     const businessId = await getCurrentBusinessId();
+    return await IncomeDB.getTotal(businessId);
+  },
+
+  getIncomes: async (): Promise<IncomeRecord[]> => {
     const rows = await IncomeDB.getAll(businessId);
     return rows.map((row: any) => ({
       id: row.id,

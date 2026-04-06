@@ -149,15 +149,15 @@ export async function archiveOldExpenses(config: ArchiveConfig = DEFAULT_CONFIG)
   const cutoffStr = cutoffDate.toISOString();
 
   await db.withTransactionAsync(async () => {
-    await db.execAsync(`
-      INSERT OR IGNORE INTO expenses_archive 
+    await db.runAsync(`
+      INSERT OR IGNORE INTO expenses_archive
       SELECT *, datetime('now') FROM expenses
-      WHERE timestamp < '${cutoffStr}';
-    `);
+      WHERE timestamp < ?
+    `, cutoffStr);
 
-    await db.execAsync(`
-      DELETE FROM expenses WHERE timestamp < '${cutoffStr}';
-    `);
+    await db.runAsync(`
+      DELETE FROM expenses WHERE timestamp < ?
+    `, cutoffStr);
   });
 
   const result = await db.getFirstAsync<{ count: number }>(
@@ -177,15 +177,15 @@ export async function archiveOldIncome(config: ArchiveConfig = DEFAULT_CONFIG): 
   const cutoffStr = cutoffDate.toISOString();
 
   await db.withTransactionAsync(async () => {
-    await db.execAsync(`
-      INSERT OR IGNORE INTO income_archive 
+    await db.runAsync(`
+      INSERT OR IGNORE INTO income_archive
       SELECT *, datetime('now') FROM income
-      WHERE timestamp < '${cutoffStr}';
-    `);
+      WHERE timestamp < ?
+    `, cutoffStr);
 
-    await db.execAsync(`
-      DELETE FROM income WHERE timestamp < '${cutoffStr}';
-    `);
+    await db.runAsync(`
+      DELETE FROM income WHERE timestamp < ?
+    `, cutoffStr);
   });
 
   const result = await db.getFirstAsync<{ count: number }>(

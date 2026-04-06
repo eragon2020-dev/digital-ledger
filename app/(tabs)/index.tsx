@@ -61,15 +61,12 @@ export default function DashboardScreen() {
 
   const loadData = useCallback(async () => {
     if (!isReady) {
-      console.log('loadData: Database not ready, skipping...');
+      // Skip if database not ready
       return;
     }
-    
+
     try {
-      console.log('loadData: Starting...');
-      
       // Load only recent sales for dashboard (not ALL sales)
-      console.log('loadData: Fetching recent sales...');
       const salesData = await StockStore.getRecentSales(20);
       setSales(salesData);
 
@@ -79,19 +76,15 @@ export default function DashboardScreen() {
       const todayCount = await StockStore.getTodayCount();
       setTotalTransactions(todayCount);
 
-      console.log('loadData: Fetching capital...');
       const cap = await StockStore.getCapital();
       setInitialCapital(cap);
 
-      console.log('loadData: Fetching business name...');
       const name = await StockStore.getBusinessName();
       setBusinessName(name);
 
-      console.log('loadData: Fetching business ID...');
       const bizId = await getCurrentBusinessId();
       setCurrentBizId(bizId);
 
-      console.log('loadData: Fetching all businesses...');
       const allBiz = await getAllBusinesses();
       setBusinesses(allBiz);
 
@@ -107,16 +100,14 @@ export default function DashboardScreen() {
       // Get non-stock expenses total from DB (not client-side filter)
       const nonStockExpensesTotal = await StockStore.getNonStockExpensesTotal();
 
-      // Get all manual income
-      const allIncomes = await StockStore.getIncomes();
-      const totalManualIncome = allIncomes.reduce((sum, i) => sum + i.amount, 0);
+      // Get all manual income total from DB (not client-side filter)
+      const totalManualIncome = await StockStore.getTotalIncome();
 
       // Net profit = gross profit - non-stock expenses + manual income
       const calculatedNetProfit = grossProfit - nonStockExpensesTotal + totalManualIncome;
       setNetProfit(calculatedNetProfit);
 
       // Load only recent expenses for monthly display (not used in capital calc)
-      console.log('loadData: Fetching recent expenses...');
       const recentExpenses = await StockStore.getRecentExpenses(200);
       const manualExpenses = recentExpenses
         .filter(
@@ -136,10 +127,9 @@ export default function DashboardScreen() {
       setPaidAmount(paid);
       setPendingAmount(pending);
 
-      console.log('loadData: Complete');
-    } catch (error) {
-      console.error('loadData: Error occurred:', error);
       // Don't throw - let the app continue with partial data
+    } catch (error) {
+      console.error('loadData error:', error);
     }
   }, [isReady]);
 

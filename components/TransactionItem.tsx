@@ -22,6 +22,7 @@ const ICON_MAP: Record<string, string> = {
   'shopping-bag': 'shopping-bag',
   'payments': 'payments',
   'inventory-2': 'inventory-2',
+  'receipt': 'receipt',
 };
 
 export function TransactionItem({ transaction, onPress, style }: TransactionItemProps) {

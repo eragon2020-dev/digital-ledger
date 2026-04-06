@@ -44,30 +44,35 @@ export default function SaleDetailScreen() {
     try {
       const sales = await StockStore.getSalesHistory();
       const found = sales.find((s) => s.id === id);
-      if (found) {
-        setSale(found);
-        setPaymentMethod(found.paymentMethod);
-        const rate = found.taxRate ?? 0;
-        setTaxRate(rate);
-        setCustomTaxInput(rate > 0 ? String(rate) : '');
-        setShowCustomTax(rate > 0);
-        // Convert SoldItem to CartItem format for editing
-        const products = await StockStore.getProducts();
-        setAvailableProducts(products);
-        const cartItems: CartItem[] = found.items.map((item) => {
-          const product = products.find((p) => p.id === item.id);
-          return {
-            id: item.id,
-            name: item.name,
-            price: item.price,
-            image: product?.image || '',
-            stock: product?.stock || 0,
-            productType: product?.productType || 'item',
-            quantity: item.quantity,
-          };
-        });
-        setCartItems(cartItems);
+      if (!found) {
+        Alert.alert('Error', 'Sale not found');
+        return;
       }
+      if (!found.items || found.items.length === 0) {
+        Alert.alert('Warning', 'This sale has no items');
+      }
+      setSale(found);
+      setPaymentMethod(found.paymentMethod);
+      const rate = found.taxRate ?? 0;
+      setTaxRate(rate);
+      setCustomTaxInput(rate > 0 ? String(rate) : '');
+      setShowCustomTax(rate > 0);
+      // Convert SoldItem to CartItem format for editing
+      const products = await StockStore.getProducts();
+      setAvailableProducts(products);
+      const cartItems: CartItem[] = (found.items || []).map((item) => {
+        const product = products.find((p) => p.id === item.id);
+        return {
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          image: product?.image || '',
+          stock: product?.stock || 0,
+          productType: product?.productType || 'item',
+          quantity: item.quantity,
+        };
+      });
+      setCartItems(cartItems);
     } catch (error) {
       console.error('Error loading sale:', error);
       Alert.alert('Error', 'Failed to load sale details');

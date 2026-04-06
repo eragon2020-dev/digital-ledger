@@ -477,10 +477,14 @@ export const ProductDB = {
   },
 
   // Get product count
-  async getCount(businessId: string, options: { searchQuery?: string } = {}): Promise<number> {
+  async getCount(businessId: string, options: { searchQuery?: string; lowStock?: boolean } = {}): Promise<number> {
     const database = getDb();
     let whereClause = 'WHERE business_id = ?';
     const params: any[] = [businessId];
+
+    if (options.lowStock) {
+      whereClause += ' AND product_type = \'item\' AND stock <= 5';
+    }
 
     if (options.searchQuery) {
       whereClause += ' AND (name LIKE ? OR sku LIKE ? OR category LIKE ?)';
@@ -1561,6 +1565,25 @@ export const IncomeDB = {
       ...params
     );
     return result?.count ?? 0;
+  },
+
+  async getMonthlyTotal(businessId: string, year: number, month: number) {
+    const database = getDb();
+    const result = await database.getFirstAsync<{ total: number }>(
+      `SELECT COALESCE(SUM(amount), 0) as total FROM income
+       WHERE business_id = ? AND STRFTIME('%Y', timestamp) = ? AND STRFTIME('%m', timestamp) = ?`,
+      businessId, String(year), String(month).padStart(2, '0')
+    );
+    return result?.total ?? 0;
+  },
+
+  async getTotal(businessId: string) {
+    const database = getDb();
+    const result = await database.getFirstAsync<{ total: number }>(
+      `SELECT COALESCE(SUM(amount), 0) as total FROM income WHERE business_id = ?`,
+      businessId
+    );
+    return result?.total ?? 0;
   },
 
   async create(income: { id: string; businessId: string; title: string; amount: number; timestamp: string }) {

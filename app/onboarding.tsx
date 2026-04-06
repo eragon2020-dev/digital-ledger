@@ -81,7 +81,7 @@ export default function OnboardingScreen() {
     try {
       await AsyncStorage.setItem('hasSeenOnboarding', 'true');
     } catch (e) {
-      console.log('Failed to save onboarding state');
+      console.error('Failed to save onboarding state', e);
     }
     router.replace('/(tabs)' as any);
   };
