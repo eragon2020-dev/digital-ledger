@@ -237,19 +237,22 @@ export async function getProfitAnalytics(businessId: string): Promise<{
 }> {
   const db = getDb();
 
-  const result = await db.getFirstAsync<any>(`
-    SELECT 
-      COALESCE(SUM(s.total), 0) as total_revenue,
-      COALESCE(SUM(si.buy_price * si.quantity), 0) as total_cost,
-      COALESCE(SUM(s.total - (si.buy_price * si.quantity)), 0) as total_profit
-    FROM sales s
-    LEFT JOIN sale_items si ON s.id = si.sale_id
+  const revenueResult = await db.getFirstAsync<any>(`
+    SELECT COALESCE(SUM(total), 0) as total_revenue
+    FROM sales
+    WHERE business_id = ?
+  `, businessId);
+
+  const costResult = await db.getFirstAsync<any>(`
+    SELECT COALESCE(SUM(si.buy_price * si.quantity), 0) as total_cost
+    FROM sale_items si
+    INNER JOIN sales s ON si.sale_id = s.id
     WHERE s.business_id = ?
   `, businessId);
 
-  const totalRevenue = result?.total_revenue ?? 0;
-  const totalCost = result?.total_cost ?? 0;
-  const totalProfit = result?.total_profit ?? 0;
+  const totalRevenue = revenueResult?.total_revenue ?? 0;
+  const totalCost = costResult?.total_cost ?? 0;
+  const totalProfit = parseFloat((totalRevenue - totalCost).toFixed(2));
   const profitMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
 
   return {

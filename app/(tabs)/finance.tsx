@@ -112,6 +112,10 @@ export default function FinanceScreen() {
         });
         setTotalExpensesCount(count);
 
+        // Aggregate total expenses amount
+        const totalAmount = result.data.reduce((sum, e) => sum + e.amount, 0);
+        setTotalExpensesAmount(totalAmount);
+
         setExpenses(result.data);
         setFilteredExpenses(result.data);
 

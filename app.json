@@ -8,7 +8,7 @@
     "scheme": "digitalledger",
     "description": "Beyond the books",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": true
     },
@@ -19,7 +19,7 @@
         "foregroundColor": "#0EA5E9",
         "backgroundColor": "#082f49"
       },
-      "edgeToEdgeEnabled": true,
+      "edgeToEdgeEnabled": false,
       "predictiveBackGestureEnabled": false
     },
     "web": {
@@ -28,7 +28,12 @@
     },
     "plugins": [
       "expo-router",
-      "expo-sqlite",
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": false
+        }
+      ],
       "@react-native-community/datetimepicker"
     ],
     "experiments": {

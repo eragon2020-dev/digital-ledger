@@ -274,7 +274,7 @@ export async function initDatabase(deleteExisting = false) {
 
     // Migration: set default buy_price (50% of sell price) for products without one
     try {
-      await database.execAsync(`UPDATE products SET buy_price = ROUND(price * 0.5, 2) WHERE buy_price IS NULL OR buy_price = 0;`);
+      await database.execAsync(`UPDATE products SET buy_price = ROUND(price * 0.5, 2) WHERE buy_price IS NULL;`);
     } catch {
       // Already done
     }
@@ -1017,16 +1017,21 @@ export const SaleDB = {
     const database = getDb();
     // Use a transaction for atomicity
     await database.withTransactionAsync(async () => {
+      // Round monetary values to prevent floating-point drift
+      const subtotal = parseFloat((Math.round(sale.subtotal * 100) / 100).toFixed(2));
+      const tax = parseFloat((Math.round(sale.tax * 100) / 100).toFixed(2));
+      const total = parseFloat((Math.round(sale.total * 100) / 100).toFixed(2));
+
       // Insert sale
       await database.runAsync(
         `INSERT INTO sales (id, business_id, subtotal, tax, tax_rate, total, payment_method, payment_status, timestamp)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         sale.id,
         sale.businessId,
-        sale.subtotal,
-        sale.tax,
+        subtotal,
+        tax,
         sale.taxRate,
-        sale.total,
+        total,
         sale.paymentMethod,
         sale.paymentStatus,
         sale.timestamp
@@ -1034,6 +1039,8 @@ export const SaleDB = {
 
       // Insert sale items
       for (const item of sale.items) {
+        const itemTotal = parseFloat((Math.round(item.total * 100) / 100).toFixed(2));
+        const itemPrice = parseFloat((Math.round(item.price * 100) / 100).toFixed(2));
         await database.runAsync(
           `INSERT INTO sale_items (id, sale_id, product_id, product_name, price, quantity, total, buy_price)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -1041,9 +1048,9 @@ export const SaleDB = {
           sale.id,
           item.productId,
           item.productName,
-          item.price,
+          itemPrice,
           item.quantity,
-          item.total,
+          itemTotal,
           item.buyPrice || 0
         );
 
@@ -1123,16 +1130,19 @@ export const SaleDB = {
           );
         }
 
-        // Recalculate totals
+        // Recalculate totals using the sale's actual tax_rate
         const subtotal = updates.items.reduce((sum, item) => sum + item.total, 0);
-        const tax = subtotal * 0.05;
-        const total = subtotal + tax;
+        const sale = await this.getById(saleId);
+        const taxRate = updates.taxRate ?? sale.tax_rate ?? 0;
+        const tax = parseFloat((subtotal * (taxRate / 100)).toFixed(2));
+        const total = parseFloat((subtotal + tax).toFixed(2));
 
         await database.runAsync(
-          'UPDATE sales SET subtotal = ?, tax = ?, total = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+          'UPDATE sales SET subtotal = ?, tax = ?, total = ?, tax_rate = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
           subtotal,
           tax,
           total,
+          taxRate,
           saleId
         );
       }

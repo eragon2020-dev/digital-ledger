@@ -126,9 +126,12 @@ export const StockStore = {
     // Fetch products to get buy prices
     const products = await StockStore.getProducts();
 
-    const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const tax = subtotal * (taxRate / 100);
-    const total = subtotal + tax;
+    const rawSubtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const rawTax = rawSubtotal * (taxRate / 100);
+    const rawTotal = rawSubtotal + rawTax;
+    const subtotal = parseFloat((Math.round(rawSubtotal * 100) / 100).toFixed(2));
+    const tax = parseFloat((Math.round(rawTax * 100) / 100).toFixed(2));
+    const total = parseFloat((Math.round(rawTotal * 100) / 100).toFixed(2));
 
     // Use timestamp-based ID to avoid conflicts
     const saleId = `#${Date.now()}`;
@@ -220,9 +223,12 @@ export const StockStore = {
     taxRate: number = 0
   ): Promise<SaleRecord | null> => {
     try {
-      const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      const tax = subtotal * (taxRate / 100);
-      const total = subtotal + tax;
+      const rawSubtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const rawTax = rawSubtotal * (taxRate / 100);
+      const rawTotal = rawSubtotal + rawTax;
+      const subtotal = parseFloat((Math.round(rawSubtotal * 100) / 100).toFixed(2));
+      const tax = parseFloat((Math.round(rawTax * 100) / 100).toFixed(2));
+      const total = parseFloat((Math.round(rawTotal * 100) / 100).toFixed(2));
 
       // Get existing sale to preserve payment method
       const existingSale = await SaleDB.getById(saleId);
