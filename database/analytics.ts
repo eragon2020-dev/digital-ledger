@@ -44,20 +44,19 @@ export async function getSalesAnalytics(
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
   const yearStart = new Date(now.getFullYear(), 0, 1).toISOString();
 
-  // Single query for all analytics
+  // Single query for all analytics with parameterized dates
   const result = await db.getAllAsync<any>(`
-    -- Today's stats
-    SELECT 
-      COALESCE(SUM(CASE WHEN DATE(timestamp) = '${today}' THEN total ELSE 0 END), 0) as today_total,
-      COALESCE(SUM(CASE WHEN DATE(timestamp) = '${today}' THEN 1 ELSE 0 END), 0) as today_count,
-      COALESCE(SUM(CASE WHEN timestamp >= '${monthStart}' THEN total ELSE 0 END), 0) as month_total,
-      COALESCE(SUM(CASE WHEN timestamp >= '${monthStart}' THEN 1 ELSE 0 END), 0) as month_count,
-      COALESCE(SUM(CASE WHEN timestamp >= '${yearStart}' THEN total ELSE 0 END), 0) as year_total,
-      COALESCE(SUM(CASE WHEN timestamp >= '${yearStart}' THEN 1 ELSE 0 END), 0) as year_count,
+    SELECT
+      COALESCE(SUM(CASE WHEN DATE(timestamp) = DATE(?) THEN total ELSE 0 END), 0) as today_total,
+      COALESCE(SUM(CASE WHEN DATE(timestamp) = DATE(?) THEN 1 ELSE 0 END), 0) as today_count,
+      COALESCE(SUM(CASE WHEN timestamp >= ? THEN total ELSE 0 END), 0) as month_total,
+      COALESCE(SUM(CASE WHEN timestamp >= ? THEN 1 ELSE 0 END), 0) as month_count,
+      COALESCE(SUM(CASE WHEN timestamp >= ? THEN total ELSE 0 END), 0) as year_total,
+      COALESCE(SUM(CASE WHEN timestamp >= ? THEN 1 ELSE 0 END), 0) as year_count,
       COALESCE(AVG(total), 0) as avg_sale_value
     FROM ${table}
     WHERE business_id = ?
-  `, businessId);
+  `, today, today, monthStart, monthStart, yearStart, yearStart, businessId);
 
   // Get top payment method
   const paymentResult = await db.getFirstAsync<any>(`

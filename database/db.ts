@@ -423,13 +423,17 @@ export const ProductDB = {
   },
 
   // Paginated products with server-side search (uses FTS5 when available)
-  async getPaginated(businessId: string, options: PaginationOptions = {}): Promise<PaginatedResult<any>> {
+  async getPaginated(businessId: string, options: PaginationOptions & { lowStock?: boolean } = {}): Promise<PaginatedResult<any>> {
     const database = getDb();
     const limit = options.limit || 50;
-    const { cursor, searchQuery } = options;
+    const { cursor, searchQuery, lowStock } = options;
 
     let whereClause = 'WHERE business_id = ?';
     const params: any[] = [businessId];
+
+    if (lowStock) {
+      whereClause += ' AND product_type = \'item\' AND stock <= 5';
+    }
 
     if (cursor) {
       whereClause += ' AND id < ?';

@@ -225,7 +225,7 @@ export default function FinanceScreen() {
 
   // Initial load only - don't re-fire on every loadData change
   useEffect(() => {
-    loadData();
+    loadData(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -286,7 +286,11 @@ export default function FinanceScreen() {
     setShowFromPicker(Platform.OS === "ios");
     if (selectedDate) {
       setShowFromDate(selectedDate);
-      setTimeout(applyDateFilter, 100);
+      setExpenseCursor(undefined);
+      setIncomeCursor(undefined);
+      setExpenseHasMore(true);
+      setIncomeHasMore(true);
+      loadData(true);
     }
   };
 
@@ -294,7 +298,11 @@ export default function FinanceScreen() {
     setShowToPicker(Platform.OS === "ios");
     if (selectedDate) {
       setShowToDate(selectedDate);
-      setTimeout(applyDateFilter, 100);
+      setExpenseCursor(undefined);
+      setIncomeCursor(undefined);
+      setExpenseHasMore(true);
+      setIncomeHasMore(true);
+      loadData(true);
     }
   };
 

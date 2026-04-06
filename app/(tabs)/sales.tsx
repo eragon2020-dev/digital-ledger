@@ -264,7 +264,6 @@ export default function SalesScreen() {
   // Render each sale item
   const renderSaleItem = useCallback(({ item: sale }: { item: SaleRecord }) => (
     <TouchableOpacity
-      key={sale.id}
       activeOpacity={0.8}
       onLongPress={() => {
         Alert.alert(sale.id, undefined, [

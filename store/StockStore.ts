@@ -153,7 +153,7 @@ export const StockStore = {
     const total = parseFloat((subtotal + tax).toFixed(2));
 
     // Use timestamp-based ID to avoid conflicts
-    const saleId = `#${Date.now()}`;
+    const saleId = `sale-${Date.now()}`;
 
     const dbItems = items.map((item) => {
       const product = products.find((p) => p.id === item.id);

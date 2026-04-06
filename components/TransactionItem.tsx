@@ -1,13 +1,28 @@
 import { View, Text, TouchableOpacity, ViewStyle } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
-import { Transaction } from '@/constants/Data';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 interface TransactionItemProps {
-  transaction: Transaction;
+  transaction: {
+    id: string;
+    title: string;
+    subtitle: string;
+    amount: number;
+    isExpense: boolean;
+    status: string;
+    icon: string;
+    date: string;
+  };
   onPress?: () => void;
   style?: ViewStyle;
 }
+
+const ICON_MAP: Record<string, string> = {
+  'shopping-bag': 'shopping-bag',
+  'payments': 'payments',
+  'inventory-2': 'inventory-2',
+};
 
 export function TransactionItem({ transaction, onPress, style }: TransactionItemProps) {
   const colorScheme = useColorScheme();
@@ -16,6 +31,8 @@ export function TransactionItem({ transaction, onPress, style }: TransactionItem
   const formatAmount = (amount: number, isExpense: boolean) => {
     return `${isExpense ? '-' : '+'}MVR ${amount.toFixed(2)}`;
   };
+
+  const iconName = ICON_MAP[transaction.icon] || 'receipt';
 
   return (
     <TouchableOpacity
@@ -46,9 +63,7 @@ export function TransactionItem({ transaction, onPress, style }: TransactionItem
             justifyContent: 'center',
           }}
         >
-          <Text style={{ fontSize: 20 }}>
-            {transaction.icon === 'shopping-bag' ? '🛍️' : transaction.icon === 'payments' ? '💳' : '📦'}
-          </Text>
+          <MaterialIcons name={iconName as any} size={24} color={colors.primary} />
         </View>
         <View>
           <Text style={{ fontWeight: '700', color: colors.onSurface, fontSize: 14 }}>

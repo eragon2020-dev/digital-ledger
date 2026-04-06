@@ -96,39 +96,39 @@ export async function archiveOldSales(config: ArchiveConfig = DEFAULT_CONFIG): P
   cutoffDate.setMonth(cutoffDate.getMonth() - config.salesMonthsToKeep);
   const cutoffStr = cutoffDate.toISOString();
 
-  // Move sales to archive
+  // Move sales to archive using parameterized queries
   await db.withTransactionAsync(async () => {
     // Copy sales to archive
-    await db.execAsync(`
-      INSERT OR IGNORE INTO sales_archive (id, business_id, subtotal, tax, tax_rate, total, 
+    await db.runAsync(`
+      INSERT OR IGNORE INTO sales_archive (id, business_id, subtotal, tax, tax_rate, total,
         payment_method, payment_status, timestamp, created_at, updated_at)
-      SELECT id, business_id, subtotal, tax, tax_rate, total, 
+      SELECT id, business_id, subtotal, tax, tax_rate, total,
         payment_method, payment_status, timestamp, created_at, updated_at
       FROM sales
-      WHERE timestamp < '${cutoffStr}';
-    `);
+      WHERE timestamp < ?
+    `, cutoffStr);
 
     // Copy sale items to archive
-    await db.execAsync(`
-      INSERT OR IGNORE INTO sale_items_archive (id, sale_id, product_id, product_name, 
+    await db.runAsync(`
+      INSERT OR IGNORE INTO sale_items_archive (id, sale_id, product_id, product_name,
         price, quantity, total, buy_price)
-      SELECT si.id, si.sale_id, si.product_id, si.product_name, 
+      SELECT si.id, si.sale_id, si.product_id, si.product_name,
         si.price, si.quantity, si.total, si.buy_price
       FROM sale_items si
       INNER JOIN sales s ON si.sale_id = s.id
-      WHERE s.timestamp < '${cutoffStr}';
-    `);
+      WHERE s.timestamp < ?
+    `, cutoffStr);
 
     // Delete from main tables
-    await db.execAsync(`
+    await db.runAsync(`
       DELETE FROM sale_items WHERE sale_id IN (
-        SELECT id FROM sales WHERE timestamp < '${cutoffStr}'
-      );
-    `);
+        SELECT id FROM sales WHERE timestamp < ?
+      )
+    `, cutoffStr);
 
-    await db.execAsync(`
-      DELETE FROM sales WHERE timestamp < '${cutoffStr}';
-    `);
+    await db.runAsync(`
+      DELETE FROM sales WHERE timestamp < ?
+    `, cutoffStr);
   });
 
   // Get count of archived sales

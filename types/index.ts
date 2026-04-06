@@ -19,6 +19,7 @@ export interface CartItem {
   image: string;
   stock: number;
   buyPrice?: number;
+  productType?: ProductType;
   quantity: number;
 }
 
@@ -29,6 +30,7 @@ export interface SoldItem {
   quantity: number;
   total: number;
   buyPrice?: number;
+  productType?: ProductType;
 }
 
 export interface SaleRecord {

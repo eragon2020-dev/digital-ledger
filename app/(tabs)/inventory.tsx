@@ -308,6 +308,7 @@ export default function InventoryScreen() {
         const options: any = {
           limit: 50,
           searchQuery: searchQuery || undefined,
+          lowStock: activeFilter === "low" || undefined,
         };
 
         if (!reset && cursor) {
@@ -361,7 +362,7 @@ export default function InventoryScreen() {
       loadProducts(true);
     }, 300);
     return () => clearTimeout(timeout);
-  }, [searchQuery]);
+  }, [searchQuery, activeFilter]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -375,10 +376,7 @@ export default function InventoryScreen() {
   ];
 
   // Server-side filtering for low stock
-  const filteredProducts =
-    activeFilter === "low"
-      ? products.filter((p) => p.productType !== "service" && p.stock <= 5)
-      : products;
+  const filteredProducts = products; // Already filtered at DB level
 
   const totalSellValue = products.reduce(
     (sum, p) => sum + p.price * p.stock,

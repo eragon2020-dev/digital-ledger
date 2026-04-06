@@ -7,12 +7,12 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
-  useColorScheme,
   Platform,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useToast } from '@/providers/ToastProvider';
 import { Colors } from '@/constants/Colors';
 import {

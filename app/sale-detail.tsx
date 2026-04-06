@@ -41,32 +41,36 @@ export default function SaleDetailScreen() {
   }, [saleId]);
 
   const loadSale = async (id: string) => {
-    const sales = await StockStore.getSalesHistory();
-    const found = sales.find((s) => s.id === id);
-    if (found) {
-      setSale(found);
-      setPaymentMethod(found.paymentMethod);
-      const rate = found.taxRate ?? 0;
-      setTaxRate(rate);
-      setCustomTaxInput(rate > 0 ? String(rate) : '');
-      setShowCustomTax(rate > 0);
-      // Convert SoldItem to CartItem format for editing
-      // Note: We don't have full product info here, so we'll load products separately
-      const products = await StockStore.getProducts();
-      setAvailableProducts(products);
-      const cartItems: CartItem[] = found.items.map((item) => {
-        const product = products.find((p) => p.id === item.id);
-        return {
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          image: product?.image || '',
-          stock: product?.stock || 0,
-          productType: product?.productType || 'item',
-          quantity: item.quantity,
-        };
-      });
-      setCartItems(cartItems);
+    try {
+      const sales = await StockStore.getSalesHistory();
+      const found = sales.find((s) => s.id === id);
+      if (found) {
+        setSale(found);
+        setPaymentMethod(found.paymentMethod);
+        const rate = found.taxRate ?? 0;
+        setTaxRate(rate);
+        setCustomTaxInput(rate > 0 ? String(rate) : '');
+        setShowCustomTax(rate > 0);
+        // Convert SoldItem to CartItem format for editing
+        const products = await StockStore.getProducts();
+        setAvailableProducts(products);
+        const cartItems: CartItem[] = found.items.map((item) => {
+          const product = products.find((p) => p.id === item.id);
+          return {
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            image: product?.image || '',
+            stock: product?.stock || 0,
+            productType: product?.productType || 'item',
+            quantity: item.quantity,
+          };
+        });
+        setCartItems(cartItems);
+      }
+    } catch (error) {
+      console.error('Error loading sale:', error);
+      Alert.alert('Error', 'Failed to load sale details');
     }
   };
 
