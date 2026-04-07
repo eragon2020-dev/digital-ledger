@@ -39,6 +39,7 @@ export default function DashboardScreen() {
   const [sales, setSales] = useState<SaleRecord[]>([]);
   const [todayTotal, setTodayTotal] = useState(0);
   const [totalTransactions, setTotalTransactions] = useState(0);
+  const [monthlyTransactions, setMonthlyTransactions] = useState(0);
   const [paidAmount, setPaidAmount] = useState(0);
   const [pendingAmount, setPendingAmount] = useState(0);
   const [initialCapital, setInitialCapital] = useState(0);
@@ -74,6 +75,13 @@ export default function DashboardScreen() {
       const todayCount = await StockStore.getTodayCount();
       setTotalTransactions(todayCount);
 
+      // Monthly sales count
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+      const monthCount = await StockStore.getSalesCount({ fromDate: monthStart, toDate: monthEnd });
+      setMonthlyTransactions(monthCount);
+
       const cap = await StockStore.getCapital();
       setInitialCapital(cap);
 
@@ -85,8 +93,6 @@ export default function DashboardScreen() {
 
       const allBiz = await getAllBusinesses();
       setBusinesses(allBiz);
-
-      const now = new Date();
 
       // Calculate all-time profit for capital calculation
       // Net Profit = (Total Revenue - Total COGS) - Total Non-Stock Expenses + Total Manual Income
@@ -730,10 +736,10 @@ export default function DashboardScreen() {
             </Text>
           </View>
           <Text numberOfLines={1} adjustsFontSizeToFit style={[styles.statsCardValue, { color: colors.onSurface }]}>
-            {totalTransactions}
+            {monthlyTransactions}
           </Text>
           <Text style={[styles.statsCardSub, { color: colors.secondary }]}>
-            Total transactions
+            This month
           </Text>
 
           {/* Payment Breakdown */}

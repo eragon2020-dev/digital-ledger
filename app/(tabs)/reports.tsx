@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 import {
   View,
   Text,
@@ -55,13 +56,20 @@ export default function ReportsScreen() {
   const [businessId, setBusinessId] = useState<string>("");
   const [monthlyAnalysis, setMonthlyAnalysis] = useState<MonthlyAnalysis | null>(null);
 
-  useEffect(() => {
-    const loadBiz = async () => {
-      const biz = await getCurrentBusinessId();
-      setBusinessId(biz);
-    };
-    loadBiz();
-  }, []);
+  // Refresh business ID and data whenever the tab comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      let active = true;
+      const refresh = async () => {
+        const biz = await getCurrentBusinessId();
+        if (active) {
+          setBusinessId(biz);
+        }
+      };
+      refresh();
+      return () => { active = false; };
+    }, [])
+  );
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
