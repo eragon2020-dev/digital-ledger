@@ -1,4 +1,5 @@
 import { TouchableOpacity, Text, ActivityIndicator, ViewStyle, TextStyle } from 'react-native';
+import { getAdaptiveFontSize } from '@/utils/scaling';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -47,7 +48,7 @@ export function Button({
 
   const getTextStyle = (): TextStyle => {
     const base: TextStyle = {
-      fontSize: 16,
+      fontSize: getAdaptiveFontSize(16),
       fontWeight: '700',
     };
 

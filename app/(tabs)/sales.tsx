@@ -17,6 +17,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import ViewShot from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
+import { getAdaptiveFontSize } from "@/utils/scaling";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { StockStore } from "@/store/StockStore";
@@ -605,21 +606,21 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   headerTitleSection: { flex: 1 },
-  headerTitle: { fontSize: 24, fontWeight: "800", color: "#FFFFFF" },
+  headerTitle: { fontSize: getAdaptiveFontSize(24), fontWeight: "800", color: "#FFFFFF" },
   headerSubtitle: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     color: "rgba(255,255,255,0.7)",
     marginTop: 4,
   },
   headerTotal: { alignItems: "flex-end" },
   headerTotalLabel: {
-    fontSize: 10,
+    fontSize: getAdaptiveFontSize(10),
     fontWeight: "500",
     color: "rgba(255,255,255,0.6)",
     textTransform: "uppercase",
     letterSpacing: 1,
   },
-  headerTotalValue: { fontSize: 20, fontWeight: "800", color: "#FFFFFF" },
+  headerTotalValue: { fontSize: getAdaptiveFontSize(20), fontWeight: "800", color: "#FFFFFF" },
   headerActions: { flexDirection: "row", gap: 8, marginTop: 12 },
   headerActionBtn: {
     width: 36,
@@ -641,7 +642,7 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 12,
   },
-  dateFilterTitle: { fontSize: 14, fontWeight: "700" },
+  dateFilterTitle: { fontSize: getAdaptiveFontSize(14), fontWeight: "700" },
   datePickerRow: { flexDirection: "row", gap: 10, alignItems: "flex-start" },
   datePickerBtn: {
     flexDirection: "row",
@@ -651,9 +652,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
   },
-  datePickerLabel: { fontSize: 11, fontWeight: "600" },
+  datePickerLabel: { fontSize: getAdaptiveFontSize(11), fontWeight: "600" },
   datePickerValue: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     fontWeight: "600",
     flex: 1,
     textAlign: "center",
@@ -672,8 +673,8 @@ const styles = StyleSheet.create({
     paddingVertical: 80,
     gap: 12,
   },
-  emptyText: { fontSize: 18, fontWeight: "700" },
-  emptySubtext: { fontSize: 14 },
+  emptyText: { fontSize: getAdaptiveFontSize(18), fontWeight: "700" },
+  emptySubtext: { fontSize: getAdaptiveFontSize(14) },
   saleCard: { borderRadius: 20, padding: 20, borderWidth: 1 },
   saleHeader: {
     flexDirection: "row",
@@ -682,7 +683,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   saleIdBadge: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
-  saleIdText: { fontSize: 12, fontWeight: "700" },
+  saleIdText: { fontSize: getAdaptiveFontSize(12), fontWeight: "700" },
   paymentChip: {
     flexDirection: "row",
     alignItems: "center",
@@ -691,9 +692,9 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 999,
   },
-  paymentChipText: { fontSize: 10, fontWeight: "600" },
-  taxChipText: { fontSize: 10, fontWeight: "600" },
-  saleDate: { fontSize: 12 },
+  paymentChipText: { fontSize: getAdaptiveFontSize(10), fontWeight: "600" },
+  taxChipText: { fontSize: getAdaptiveFontSize(10), fontWeight: "600" },
+  saleDate: { fontSize: getAdaptiveFontSize(12) },
   saleItems: { gap: 8, marginBottom: 16 },
   saleItemRow: {
     flexDirection: "row",
@@ -702,16 +703,16 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "rgba(0,0,0,0.05)",
   },
-  saleItemName: { fontSize: 14, fontWeight: "600", flex: 1 },
-  saleItemQty: { fontSize: 12, marginHorizontal: 8 },
-  saleItemTotal: { fontSize: 13, fontWeight: "700" },
+  saleItemName: { fontSize: getAdaptiveFontSize(14), fontWeight: "600", flex: 1 },
+  saleItemQty: { fontSize: getAdaptiveFontSize(12), marginHorizontal: 8 },
+  saleItemTotal: { fontSize: getAdaptiveFontSize(13), fontWeight: "700" },
   saleSummary: { paddingTop: 12, borderTopWidth: 1, gap: 6, marginBottom: 16 },
   saleSummaryRow: { flexDirection: "row", justifyContent: "space-between" },
-  saleSummaryLabel: { fontSize: 13 },
-  saleSummaryValue: { fontSize: 13, fontWeight: "600" },
+  saleSummaryLabel: { fontSize: getAdaptiveFontSize(13) },
+  saleSummaryValue: { fontSize: getAdaptiveFontSize(13), fontWeight: "600" },
   saleTotalRow: { paddingTop: 8 },
-  saleTotalLabel: { fontSize: 16, fontWeight: "700" },
-  saleTotalValue: { fontSize: 20, fontWeight: "800" },
+  saleTotalLabel: { fontSize: getAdaptiveFontSize(16), fontWeight: "700" },
+  saleTotalValue: { fontSize: getAdaptiveFontSize(20), fontWeight: "800" },
   saleActions: { flexDirection: "row", gap: 8 },
   actionBtn: {
     flex: 1,
@@ -722,7 +723,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 12,
   },
-  actionBtnText: { fontSize: 14, fontWeight: "600" },
+  actionBtnText: { fontSize: getAdaptiveFontSize(14), fontWeight: "600" },
   hiddenReceipt: { position: "absolute", left: -9999, top: 0 },
   footerLoader: {
     flexDirection: "row",
@@ -731,5 +732,5 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     gap: 8,
   },
-  footerText: { fontSize: 14 },
+  footerText: { fontSize: getAdaptiveFontSize(14) },
 });

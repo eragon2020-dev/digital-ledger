@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { getAdaptiveFontSize } from '@/utils/scaling';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { MonthlyAnalysis, BusinessInsight, ActionItem } from '@/types';
@@ -438,7 +439,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   headerTitle: {
-    fontSize: 15,
+    fontSize: getAdaptiveFontSize(15),
     fontWeight: '700',
   },
   headerStats: {
@@ -448,7 +449,7 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   headerStat: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     fontWeight: '500',
   },
   tabBar: {
@@ -466,7 +467,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   tabLabel: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     fontWeight: '600',
   },
   tabBadge: {
@@ -477,7 +478,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   tabBadgeText: {
-    fontSize: 10,
+    fontSize: getAdaptiveFontSize(10),
     fontWeight: '700',
   },
   content: {
@@ -493,7 +494,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   emptyText: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     textAlign: 'center',
     lineHeight: 20,
   },
@@ -509,12 +510,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statLabel: {
-    fontSize: 11,
+    fontSize: getAdaptiveFontSize(11),
     fontWeight: '500',
     marginBottom: 4,
   },
   statValue: {
-    fontSize: 16,
+    fontSize: getAdaptiveFontSize(16),
     fontWeight: '700',
   },
   statusBadge: {
@@ -528,7 +529,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   statusText: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     fontWeight: '600',
   },
   forecastBox: {
@@ -540,12 +541,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   forecastTitle: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     fontWeight: '600',
     marginBottom: 4,
   },
   forecastText: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     lineHeight: 18,
   },
   insightCard: {
@@ -558,7 +559,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   insightTitle: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     fontWeight: '600',
   },
   insightBody: {
@@ -566,7 +567,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   insightDetail: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     lineHeight: 18,
   },
   suggestionBox: {
@@ -577,7 +578,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   suggestionText: {
-    fontSize: 11,
+    fontSize: getAdaptiveFontSize(11),
     fontWeight: '600',
     flex: 1,
   },
@@ -589,7 +590,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   seeAllText: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     fontWeight: '600',
   },
   actionCard: {
@@ -607,7 +608,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionNumberText: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     fontWeight: '700',
   },
   actionContent: {
@@ -620,11 +621,11 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   actionTitle: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     fontWeight: '600',
   },
   actionDetail: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     lineHeight: 18,
   },
   actionSuggestion: {
@@ -635,7 +636,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   actionSuggestionText: {
-    fontSize: 11,
+    fontSize: getAdaptiveFontSize(11),
     fontWeight: '600',
     flex: 1,
   },

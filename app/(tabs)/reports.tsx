@@ -17,6 +17,7 @@ import { SaleDB, ExpenseDB, IncomeDB, getCurrentBusinessId } from "@/database/db
 import { generateMonthlyAnalysis } from "@/database/intelligence";
 import { MonthlyInsights } from "@/components/MonthlyInsights";
 import { MonthlyAnalysis } from "@/types";
+import { getAdaptiveFontSize } from "@/utils/scaling";
 
 const MONTHS = [
   "January",
@@ -209,7 +210,7 @@ export default function ReportsScreen() {
                   >
                     <Text
                       style={{
-                        fontSize: 14,
+                        fontSize: getAdaptiveFontSize(14),
                         fontWeight: "700",
                         color:
                           y === selectedYear ? "#FFFFFF" : colors.onSurface,
@@ -249,7 +250,7 @@ export default function ReportsScreen() {
             >
               <Text
                 style={{
-                  fontSize: 12,
+                  fontSize: getAdaptiveFontSize(12),
                   fontWeight: "600",
                   color: i === selectedMonth ? colors.white : colors.secondary,
                 }}
@@ -660,7 +661,7 @@ const styles = StyleSheet.create({
     minWidth: 80,
   },
   yearText: {
-    fontSize: 16,
+    fontSize: getAdaptiveFontSize(16),
     fontWeight: "700",
     color: "#FFFFFF",
   },
@@ -683,14 +684,14 @@ const styles = StyleSheet.create({
     minWidth: 80,
     alignItems: "center",
   },
-  headerTitle: { fontSize: 24, fontWeight: "800", color: "#FFFFFF" },
-  headerSub: { fontSize: 14, color: "rgba(255,255,255,0.7)", marginTop: 4 },
+  headerTitle: { fontSize: getAdaptiveFontSize(24), fontWeight: "800", color: "#FFFFFF" },
+  headerSub: { fontSize: getAdaptiveFontSize(14), color: "rgba(255,255,255,0.7)", marginTop: 4 },
   content: { paddingHorizontal: 16, paddingTop: 16, gap: 20 },
   monthRow: { gap: 8 },
   monthBtn: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12 },
   loading: { alignItems: "center", paddingVertical: 60 },
   section: { gap: 12 },
-  sectionTitle: { fontSize: 16, fontWeight: "700" },
+  sectionTitle: { fontSize: getAdaptiveFontSize(16), fontWeight: "700" },
   summaryGrid: { flexDirection: "row", gap: 12 },
   summaryCard: {
     flex: 1,
@@ -701,19 +702,19 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   summaryCardLabel: {
-    fontSize: 11,
+    fontSize: getAdaptiveFontSize(11),
     fontWeight: "600",
     color: "rgba(255,255,255,0.7)",
   },
-  summaryCardValue: { fontSize: 20, fontWeight: "800", color: "#FFFFFF" },
+  summaryCardValue: { fontSize: getAdaptiveFontSize(20), fontWeight: "800", color: "#FFFFFF" },
   profitCard: { borderRadius: 16, padding: 16, borderWidth: 1 },
-  profitLabel: { fontSize: 13, fontWeight: "600" },
-  profitValue: { fontSize: 24, fontWeight: "800", marginTop: 6 },
+  profitLabel: { fontSize: getAdaptiveFontSize(13), fontWeight: "600" },
+  profitValue: { fontSize: getAdaptiveFontSize(24), fontWeight: "800", marginTop: 6 },
   statsCard: { borderRadius: 16, padding: 16, borderWidth: 1 },
   statsRow: { flexDirection: "row", alignItems: "center" },
   statItem: { flex: 1, alignItems: "center", gap: 6 },
-  statValue: { fontSize: 16, fontWeight: "700" },
-  statLabel: { fontSize: 11, fontWeight: "500" },
+  statValue: { fontSize: getAdaptiveFontSize(16), fontWeight: "700" },
+  statLabel: { fontSize: getAdaptiveFontSize(11), fontWeight: "500" },
   statDivider: { width: 1, alignSelf: "stretch" },
   topCard: { borderRadius: 16, padding: 16, borderWidth: 1 },
   topRow: {
@@ -724,11 +725,11 @@ const styles = StyleSheet.create({
     borderBottomColor: "rgba(0,0,0,0.05)",
     gap: 8,
   },
-  topRank: { fontSize: 12, fontWeight: "700", width: 24 },
-  topName: { flex: 1, fontSize: 13, fontWeight: "600" },
-  topQty: { fontSize: 12, fontWeight: "500" },
+  topRank: { fontSize: getAdaptiveFontSize(12), fontWeight: "700", width: 24 },
+  topName: { flex: 1, fontSize: getAdaptiveFontSize(13), fontWeight: "600" },
+  topQty: { fontSize: getAdaptiveFontSize(12), fontWeight: "500" },
   topRevenue: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     fontWeight: "700",
     minWidth: 80,
     textAlign: "right",
@@ -740,16 +741,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
   },
-  yearLabel: { fontSize: 14, fontWeight: "500" },
-  yearValue: { fontSize: 18, fontWeight: "800" },
+  yearLabel: { fontSize: getAdaptiveFontSize(14), fontWeight: "500" },
+  yearValue: { fontSize: getAdaptiveFontSize(18), fontWeight: "800" },
   inventoryCostCard: { borderRadius: 16, padding: 16, borderWidth: 1 },
   inventoryCostHeader: { flexDirection: "row", alignItems: "center", marginBottom: 12 },
-  inventoryCostTitle: { fontSize: 16, fontWeight: "700" },
-  inventoryCostSub: { fontSize: 12 },
+  inventoryCostTitle: { fontSize: getAdaptiveFontSize(16), fontWeight: "700" },
+  inventoryCostSub: { fontSize: getAdaptiveFontSize(12) },
   inventoryCostRows: { gap: 8 },
   inventoryCostRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  inventoryCostLabel: { fontSize: 13, fontWeight: "500" },
-  inventoryCostValue: { fontSize: 15, fontWeight: "700" },
+  inventoryCostLabel: { fontSize: getAdaptiveFontSize(13), fontWeight: "500" },
+  inventoryCostValue: { fontSize: getAdaptiveFontSize(15), fontWeight: "700" },
   inventoryCostDivider: { height: 1, backgroundColor: "rgba(0,0,0,0.05)" },
-  inventoryCostNote: { fontSize: 9, marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: "rgba(0,0,0,0.05)", textAlign: "center", fontStyle: "italic" },
+  inventoryCostNote: { fontSize: getAdaptiveFontSize(9), marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: "rgba(0,0,0,0.05)", textAlign: "center", fontStyle: "italic" },
 });

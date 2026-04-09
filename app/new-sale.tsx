@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from 'expo-router';
 import { useRouter } from 'expo-router';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { getAdaptiveFontSize } from "@/utils/scaling";
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { StockStore } from '@/store/StockStore';
@@ -333,7 +334,7 @@ export default function NewSaleScreen() {
         {/* Product Grid - dynamic rows based on loaded products */}
         {products.length === 0 ? (
           <View style={styles.loadingProducts}>
-            <Text style={{ color: colors.secondary, fontSize: 14 }}>
+            <Text style={{ color: colors.secondary, fontSize: getAdaptiveFontSize(14) }}>
               {searchQuery ? 'No products found' : 'Loading...'}
             </Text>
           </View>
@@ -655,8 +656,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   receiptHeader: { alignItems: 'center', marginBottom: 28 },
-  receiptTitle: { fontSize: 22, fontWeight: '800', marginBottom: 6 },
-  receiptSubtitle: { fontSize: 13 },
+  receiptTitle: { fontSize: getAdaptiveFontSize(22), fontWeight: '800', marginBottom: 6 },
+  receiptSubtitle: { fontSize: getAdaptiveFontSize(13) },
   receiptItems: { width: '100%', marginBottom: 20 },
   receiptItemRow: {
     flexDirection: 'row',
@@ -665,12 +666,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0,0,0,0.05)',
   },
-  receiptItemName: { fontSize: 14, fontWeight: '600', flex: 1 },
-  receiptItemTotal: { fontSize: 14, fontWeight: '700' },
+  receiptItemName: { fontSize: getAdaptiveFontSize(14), fontWeight: '600', flex: 1 },
+  receiptItemTotal: { fontSize: getAdaptiveFontSize(14), fontWeight: '700' },
   receiptSummary: { width: '100%', marginBottom: 28 },
   summaryRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6 },
-  summaryLabel: { fontSize: 14 },
-  summaryValue: { fontSize: 14, fontWeight: '600' },
+  summaryLabel: { fontSize: getAdaptiveFontSize(14) },
+  summaryValue: { fontSize: getAdaptiveFontSize(14), fontWeight: '600' },
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -678,8 +679,8 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: 'rgba(0,0,0,0.1)',
   },
-  totalLabel: { fontSize: 16, fontWeight: '700' },
-  totalValue: { fontSize: 26, fontWeight: '800' },
+  totalLabel: { fontSize: getAdaptiveFontSize(16), fontWeight: '700' },
+  totalValue: { fontSize: getAdaptiveFontSize(26), fontWeight: '800' },
   paymentBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -691,7 +692,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: 'rgba(0, 92, 73, 0.1)',
   },
-  paymentBadgeText: { fontSize: 13, fontWeight: '600' },
+  paymentBadgeText: { fontSize: getAdaptiveFontSize(13), fontWeight: '600' },
   newSaleButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -702,7 +703,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: '100%',
   },
-  newSaleButtonText: { fontSize: 16, fontWeight: '700', color: '#FFFFFF' },
+  newSaleButtonText: { fontSize: getAdaptiveFontSize(16), fontWeight: '700', color: '#FFFFFF' },
   // Main POS
   searchSection: {
     flexDirection: 'row',
@@ -720,7 +721,7 @@ const styles = StyleSheet.create({
     paddingVertical: 11,
     gap: 8,
   },
-  searchInput: { flex: 1, fontSize: 15 },
+  searchInput: { flex: 1, fontSize: getAdaptiveFontSize(15) },
   salesBtn: {
     width: 46,
     height: 46,
@@ -740,7 +741,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  salesBtnBadgeText: { color: '#FFFFFF', fontSize: 10, fontWeight: '700' },
+  salesBtnBadgeText: { color: '#FFFFFF', fontSize: getAdaptiveFontSize(10), fontWeight: '700' },
   loadingProducts: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 40 },
   productGrid: { gap: 10, paddingHorizontal: 16, paddingBottom: 8 },
   productGridRow: { flexDirection: 'row', gap: 10 },
@@ -763,7 +764,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  outOfStockText: { color: '#FFFFFF', fontWeight: '700', fontSize: 13 },
+  outOfStockText: { color: '#FFFFFF', fontWeight: '700', fontSize: getAdaptiveFontSize(13) },
   stockBadge: {
     position: 'absolute',
     bottom: 6,
@@ -772,9 +773,9 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 6,
   },
-  stockBadgeText: { color: '#FFFFFF', fontSize: 10, fontWeight: '700' },
-  productName: { fontSize: 12, fontWeight: '700', marginBottom: 3, textAlign: 'right' },
-  productPrice: { fontSize: 13, fontWeight: '700', color: '#0EA5E9', textAlign: 'right' },
+  stockBadgeText: { color: '#FFFFFF', fontSize: getAdaptiveFontSize(10), fontWeight: '700' },
+  productName: { fontSize: getAdaptiveFontSize(12), fontWeight: '700', marginBottom: 3, textAlign: 'right' },
+  productPrice: { fontSize: getAdaptiveFontSize(13), fontWeight: '700', color: '#0EA5E9', textAlign: 'right' },
   inCartBadge: {
     marginTop: 6,
     paddingVertical: 3,
@@ -782,7 +783,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     alignItems: 'center',
   },
-  inCartBadgeText: { color: '#FFFFFF', fontSize: 9, fontWeight: '700' },
+  inCartBadgeText: { color: '#FFFFFF', fontSize: getAdaptiveFontSize(9), fontWeight: '700' },
   // Cart Panel
   cartSection: {
     paddingHorizontal: 16,
@@ -794,12 +795,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  cartTitle: { fontSize: 16, fontWeight: '800' },
+  cartTitle: { fontSize: getAdaptiveFontSize(16), fontWeight: '800' },
   itemCountBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 999 },
-  itemCountText: { fontSize: 11, fontWeight: '700' },
-  clearText: { fontSize: 13, fontWeight: '600' },
+  itemCountText: { fontSize: getAdaptiveFontSize(11), fontWeight: '700' },
+  clearText: { fontSize: getAdaptiveFontSize(13), fontWeight: '600' },
   emptyCart: { alignItems: 'center', paddingVertical: 16, gap: 6 },
-  emptyCartText: { fontSize: 13 },
+  emptyCartText: { fontSize: getAdaptiveFontSize(13) },
   cartItemsScroll: { gap: 10, paddingBottom: 10 },
   cartItem: {
     width: 110,
@@ -816,20 +817,20 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: 6,
   },
-  cartItemName: { fontSize: 11, fontWeight: '600', marginBottom: 6, textAlign: 'right', width: '100%' },
+  cartItemName: { fontSize: getAdaptiveFontSize(11), fontWeight: '600', marginBottom: 6, textAlign: 'right', width: '100%' },
   quantityRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
   qtyBtn: { width: 26, height: 26, borderRadius: 7, alignItems: 'center', justifyContent: 'center' },
-  qtyText: { fontSize: 14, fontWeight: '700', minWidth: 20, textAlign: 'center' },
-  cartItemTotal: { fontSize: 11, fontWeight: '700' },
+  qtyText: { fontSize: getAdaptiveFontSize(14), fontWeight: '700', minWidth: 20, textAlign: 'center' },
+  cartItemTotal: { fontSize: getAdaptiveFontSize(11), fontWeight: '700' },
   taxSection: { marginTop: 8, marginBottom: 12 },
   taxHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  taxLabel: { fontSize: 12, fontWeight: '600' },
-  taxRateText: { fontSize: 14, fontWeight: '700' },
+  taxLabel: { fontSize: getAdaptiveFontSize(12), fontWeight: '600' },
+  taxRateText: { fontSize: getAdaptiveFontSize(14), fontWeight: '700' },
   taxRow: { flexDirection: 'row', gap: 8 },
   taxBtn: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  taxBtnText: { fontSize: 14, fontWeight: '700' },
+  taxBtnText: { fontSize: getAdaptiveFontSize(14), fontWeight: '700' },
   customTaxContainer: { marginTop: 8 },
-  customTaxInput: { borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14 },
+  customTaxInput: { borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: getAdaptiveFontSize(14) },
   paymentSection: { marginTop: 6, marginBottom: 10 },
   paymentRow: { flexDirection: 'row', gap: 6 },
   paymentBtn: {
@@ -841,10 +842,10 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     borderRadius: 10,
   },
-  paymentBtnText: { fontSize: 11, fontWeight: '600' },
+  paymentBtnText: { fontSize: getAdaptiveFontSize(11), fontWeight: '600' },
   checkoutSection: { gap: 10 },
-  checkoutTotalLabel: { fontSize: 16, fontWeight: '700' },
-  checkoutTotalValue: { fontSize: 22, fontWeight: '800' },
+  checkoutTotalLabel: { fontSize: getAdaptiveFontSize(16), fontWeight: '700' },
+  checkoutTotalValue: { fontSize: getAdaptiveFontSize(22), fontWeight: '800' },
   checkoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -853,7 +854,7 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 18,
   },
-  checkoutButtonText: { fontSize: 15, fontWeight: '700', color: '#FFFFFF' },
+  checkoutButtonText: { fontSize: getAdaptiveFontSize(15), fontWeight: '700', color: '#FFFFFF' },
   loadMoreBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -863,5 +864,5 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginTop: 10,
   },
-  loadMoreText: { fontSize: 13, fontWeight: '600' },
+  loadMoreText: { fontSize: getAdaptiveFontSize(13), fontWeight: '600' },
 });

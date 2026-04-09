@@ -15,6 +15,7 @@ import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useToast } from "@/providers/ToastProvider";
 import { StockStore } from "@/store/StockStore";
+import { getAdaptiveFontSize } from "@/utils/scaling";
 
 export default function BusinessSettingsScreen() {
   const colorScheme = useColorScheme();
@@ -329,9 +330,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-start",
   },
-  headerTitle: { fontSize: 22, fontWeight: "800", color: "#FFFFFF" },
+  headerTitle: { fontSize: getAdaptiveFontSize(22), fontWeight: "800", color: "#FFFFFF" },
   headerSubtitle: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     color: "rgba(255,255,255,0.7)",
     marginTop: 4,
   },
@@ -344,7 +345,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 12,
   },
-  saveBtnText: { fontSize: 14, fontWeight: "700", color: "#FFFFFF" },
+  saveBtnText: { fontSize: getAdaptiveFontSize(14), fontWeight: "700", color: "#FFFFFF" },
   closeBtn: {
     width: 40,
     height: 40,
@@ -364,12 +365,12 @@ const styles = StyleSheet.create({
     gap: 12,
     marginBottom: 12,
   },
-  settingTitle: { fontSize: 16, fontWeight: "700" },
+  settingTitle: { fontSize: getAdaptiveFontSize(16), fontWeight: "700" },
   settingInput: {
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    fontSize: 16,
+    fontSize: getAdaptiveFontSize(16),
   },
   infoRow: {
     flexDirection: "row",
@@ -377,9 +378,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 8,
   },
-  infoLabel: { fontSize: 14 },
-  infoValue: { fontSize: 14, fontWeight: "600" },
-  infoText: { fontSize: 14, lineHeight: 20 },
+  infoLabel: { fontSize: getAdaptiveFontSize(14) },
+  infoValue: { fontSize: getAdaptiveFontSize(14), fontWeight: "600" },
+  infoText: { fontSize: getAdaptiveFontSize(14), lineHeight: 20 },
   backupButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -388,14 +389,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     gap: 8,
   },
-  backupButtonText: { color: "#FFFFFF", fontSize: 16, fontWeight: "600" },
+  backupButtonText: { color: "#FFFFFF", fontSize: getAdaptiveFontSize(16), fontWeight: "600" },
   creditContainer: {
     alignItems: 'center',
     paddingVertical: 24,
     marginTop: 8,
   },
   creditText: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     fontWeight: '400',
     letterSpacing: 1,
     textTransform: 'uppercase',

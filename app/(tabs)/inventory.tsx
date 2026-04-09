@@ -16,6 +16,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { getAdaptiveFontSize } from "@/utils/scaling";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { StockStore } from "@/store/StockStore";
@@ -143,7 +144,7 @@ function ProductForm({
             />
             <Text
               style={{
-                fontSize: 13,
+                fontSize: getAdaptiveFontSize(13),
                 fontWeight: "600",
                 color: productType === t.key ? colors.white : colors.secondary,
               }}
@@ -519,7 +520,7 @@ export default function InventoryScreen() {
             <View style={styles.priceRow}>
               <Text style={[styles.priceLabel, { opacity: 0.6 }]}>Buy</Text>
               <Text
-                style={[styles.heroTotalValue, { fontSize: 28, opacity: 0.7 }]}
+                style={[styles.heroTotalValue, { fontSize: getAdaptiveFontSize(28), opacity: 0.7 }]}
               >
                 MVR{" "}
                 {totalBuyValue.toLocaleString("en-US", {
@@ -631,7 +632,7 @@ export default function InventoryScreen() {
             )}
             <Text
               style={{
-                fontSize: 14,
+                fontSize: getAdaptiveFontSize(14),
                 fontWeight: "600",
                 color:
                   activeFilter === filter.key ? colors.white : colors.secondary,
@@ -914,7 +915,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   heroLabel: {
-    fontSize: 10,
+    fontSize: getAdaptiveFontSize(10),
     fontWeight: "500",
     color: "rgba(255,255,255,0.7)",
     textTransform: "uppercase",
@@ -922,7 +923,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   heroTitle: {
-    fontSize: 24,
+    fontSize: getAdaptiveFontSize(24),
     fontWeight: "800",
     color: "#FFFFFF",
     letterSpacing: -0.5,
@@ -935,19 +936,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 8,
   },
-  heroStatValue: { fontSize: 20, fontWeight: "800", color: "#FFFFFF" },
+  heroStatValue: { fontSize: getAdaptiveFontSize(20), fontWeight: "800", color: "#FFFFFF" },
   heroStatLabel: {
-    fontSize: 10,
+    fontSize: getAdaptiveFontSize(10),
     fontWeight: "500",
     color: "rgba(255,255,255,0.7)",
   },
   heroTotalValue: {
-    fontSize: 32,
+    fontSize: getAdaptiveFontSize(32),
     fontWeight: "800",
     color: "#FFFFFF",
   },
   heroTotalLabel: {
-    fontSize: 11,
+    fontSize: getAdaptiveFontSize(11),
     color: "rgba(255,255,255,0.7)",
   },
   heroTotals: {
@@ -959,7 +960,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  priceLabel: { fontSize: 13, fontWeight: "600", color: "#FFFFFF" },
+  priceLabel: { fontSize: getAdaptiveFontSize(13), fontWeight: "600", color: "#FFFFFF" },
   priceDivider: {
     height: 1,
     backgroundColor: "rgba(255,255,255,0.15)",
@@ -1002,7 +1003,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
   addBtnText: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     fontWeight: "700",
     color: "#FFFFFF",
     paddingHorizontal: 20,
@@ -1015,13 +1016,13 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   form: { borderRadius: 16, padding: 16, borderWidth: 1.5, gap: 10 },
-  formTitle: { fontSize: 16, fontWeight: "700", marginBottom: 4 },
-  inputLabel: { fontSize: 12, fontWeight: "600", marginBottom: 4 },
+  formTitle: { fontSize: getAdaptiveFontSize(16), fontWeight: "700", marginBottom: 4 },
+  inputLabel: { fontSize: getAdaptiveFontSize(12), fontWeight: "600", marginBottom: 4 },
   formInput: {
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
   },
   formRow: { flexDirection: "row" },
   formActions: { flexDirection: "row", gap: 10, marginTop: 4 },
@@ -1034,7 +1035,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 10,
   },
-  formBtnText: { fontSize: 14, fontWeight: "700" },
+  formBtnText: { fontSize: getAdaptiveFontSize(14), fontWeight: "700" },
   imagePicker: { marginBottom: 8 },
   imagePreview: {
     width: "100%",
@@ -1050,7 +1051,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  imagePlaceholderText: { fontSize: 14, fontWeight: "500" },
+  imagePlaceholderText: { fontSize: getAdaptiveFontSize(14), fontWeight: "500" },
   removeImageBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -1058,7 +1059,7 @@ const styles = StyleSheet.create({
     gap: 4,
     marginBottom: 8,
   },
-  removeImageText: { fontSize: 12, fontWeight: "600" },
+  removeImageText: { fontSize: getAdaptiveFontSize(12), fontWeight: "600" },
   typeRow: { flexDirection: "row", gap: 8, marginBottom: 12 },
   typeChip: {
     flex: 1,
@@ -1071,7 +1072,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   serviceBadge: { flexDirection: "row", alignItems: "center", gap: 6 },
-  serviceText: { fontSize: 14, fontWeight: "600" },
+  serviceText: { fontSize: getAdaptiveFontSize(14), fontWeight: "600" },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -1080,7 +1081,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     gap: 8,
   },
-  searchInput: { flex: 1, fontSize: 16 },
+  searchInput: { flex: 1, fontSize: getAdaptiveFontSize(16) },
   filtersRow: { gap: 8 },
   filterChip: {
     flexDirection: "row",
@@ -1092,7 +1093,7 @@ const styles = StyleSheet.create({
   },
   productList: { gap: 8 },
   emptyState: { alignItems: "center", paddingVertical: 60, gap: 16 },
-  emptyText: { fontSize: 16 },
+  emptyText: { fontSize: getAdaptiveFontSize(16) },
   productCard: { borderRadius: 12, padding: 12, borderWidth: 1 },
   productCardTop: { flexDirection: "row", gap: 12, marginBottom: 10 },
   productThumb: {
@@ -1112,10 +1113,10 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 4,
   },
-  lowBadgeText: { color: "#FFFFFF", fontSize: 9, fontWeight: "700" },
+  lowBadgeText: { color: "#FFFFFF", fontSize: getAdaptiveFontSize(9), fontWeight: "700" },
   productInfo: { flex: 1 },
   productCardName: {
-    fontSize: 16,
+    fontSize: getAdaptiveFontSize(16),
     fontWeight: "600",
     marginBottom: 3,
     marginTop: 2,
@@ -1126,9 +1127,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  productPriceLabel: { fontSize: 10, color: "#64748B", fontWeight: "500" },
-  productCardPrice: { fontSize: 13, fontWeight: "700", color: "#0EA5E9" },
-  productBuyPrice: { fontSize: 11, fontWeight: "600" },
+  productPriceLabel: { fontSize: getAdaptiveFontSize(10), color: "#64748B", fontWeight: "500" },
+  productCardPrice: { fontSize: getAdaptiveFontSize(13), fontWeight: "700", color: "#0EA5E9" },
+  productBuyPrice: { fontSize: getAdaptiveFontSize(11), fontWeight: "600" },
   productCardBottom: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -1146,11 +1147,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   productStock: {
-    fontSize: 20,
+    fontSize: getAdaptiveFontSize(20),
     fontWeight: "800",
     minWidth: 48,
     textAlign: "center",
   },
   cardActions: { flexDirection: "row", gap: 12 },
-  loadMoreText: { fontSize: 14, marginTop: 8 },
+  loadMoreText: { fontSize: getAdaptiveFontSize(14), marginTop: 8 },
 });

@@ -14,6 +14,7 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { getAdaptiveFontSize } from "@/utils/scaling";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import { StockStore, IncomeRecord } from "@/store/StockStore";
@@ -824,24 +825,24 @@ export default function FinanceScreen() {
                           >
                             {formatDate(income.timestamp)}
                           </Text>
-                        </View>
-                      </View>
-                      <View style={{ alignItems: "flex-end", gap: 4 }}>
-                        <Text
-                          style={[
-                            styles.saleRowAmount,
-                            { color: colors.primary },
-                          ]}
-                        >
-                          +MVR {formatCurrency(income.amount)}
-                        </Text>
-                        <View style={{ flexDirection: 'row', gap: 8 }}>
-                          <TouchableOpacity onPress={() => editIncome(income)}>
-                            <MaterialIcons name="edit" size={16} color={colors.secondary} />
-                          </TouchableOpacity>
-                          <TouchableOpacity onPress={() => deleteIncome(income.id)}>
-                            <MaterialIcons name="delete" size={16} color={colors.tertiary} />
-                          </TouchableOpacity>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+                            <Text
+                              style={[
+                                styles.saleRowAmount,
+                                { color: colors.primary },
+                              ]}
+                            >
+                              +MVR {formatCurrency(income.amount)}
+                            </Text>
+                            <View style={{ flexDirection: 'row', gap: 8 }}>
+                              <TouchableOpacity onPress={() => editIncome(income)}>
+                                <MaterialIcons name="edit" size={16} color={colors.secondary} />
+                              </TouchableOpacity>
+                              <TouchableOpacity onPress={() => deleteIncome(income.id)}>
+                                <MaterialIcons name="delete" size={16} color={colors.tertiary} />
+                              </TouchableOpacity>
+                            </View>
+                          </View>
                         </View>
                       </View>
                     </View>
@@ -890,22 +891,22 @@ export default function FinanceScreen() {
                                 ? "Transfer"
                                 : "Credit"}
                           </Text>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
+                            <Text
+                              style={[
+                                styles.saleRowAmount,
+                                { color: colors.primary },
+                              ]}
+                            >
+                              +MVR {formatCurrency(sale.total)}
+                            </Text>
+                            <Text
+                              style={[styles.saleRowDate, { color: colors.outline }]}
+                            >
+                              {formatDate(sale.timestamp)}
+                            </Text>
+                          </View>
                         </View>
-                      </View>
-                      <View style={{ alignItems: "flex-end" }}>
-                        <Text
-                          style={[
-                            styles.saleRowAmount,
-                            { color: colors.primary },
-                          ]}
-                        >
-                          +MVR {formatCurrency(sale.total)}
-                        </Text>
-                        <Text
-                          style={[styles.saleRowDate, { color: colors.outline }]}
-                        >
-                          {formatDate(sale.timestamp)}
-                        </Text>
                       </View>
                     </View>
                   ))}
@@ -1343,22 +1344,22 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   financeTitleSection: { flex: 1 },
-  financeHeaderTitle: { fontSize: 24, fontWeight: "800", color: "#FFFFFF" },
+  financeHeaderTitle: { fontSize: getAdaptiveFontSize(24), fontWeight: "800", color: "#FFFFFF" },
   financeHeaderSubtitle: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     color: "rgba(255,255,255,0.7)",
     marginTop: 4,
   },
   financeHeaderTotal: { alignItems: "flex-end" },
   financeHeaderTotalLabel: {
-    fontSize: 10,
+    fontSize: getAdaptiveFontSize(10),
     fontWeight: "500",
     color: "rgba(255,255,255,0.6)",
     textTransform: "uppercase",
     letterSpacing: 1,
   },
   financeHeaderTotalValue: {
-    fontSize: 20,
+    fontSize: getAdaptiveFontSize(20),
     fontWeight: "800",
     color: "#FFFFFF",
   },
@@ -1370,7 +1371,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  tabText: { fontSize: 14, fontWeight: "600" },
+  tabText: { fontSize: getAdaptiveFontSize(14), fontWeight: "600" },
   scroll: { flex: 1 },
   content: { paddingHorizontal: 16, paddingTop: 16, gap: 16 },
   dateFilterCard: { borderRadius: 16, padding: 14, borderWidth: 1 },
@@ -1380,7 +1381,7 @@ const styles = StyleSheet.create({
     gap: 6,
     marginBottom: 8,
   },
-  dateFilterTitle: { fontSize: 13, fontWeight: "700" },
+  dateFilterTitle: { fontSize: getAdaptiveFontSize(13), fontWeight: "700" },
   dateFilterToggleBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -1390,7 +1391,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1,
   },
-  dateFilterToggleText: { fontSize: 12, fontWeight: "600" },
+  dateFilterToggleText: { fontSize: getAdaptiveFontSize(12), fontWeight: "600" },
   datePickerRow: { flexDirection: "row", gap: 8, alignItems: "flex-start" },
   datePickerBtn: {
     flex: 1,
@@ -1401,9 +1402,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
   },
-  datePickerLabel: { fontSize: 10, fontWeight: "600" },
+  datePickerLabel: { fontSize: getAdaptiveFontSize(10), fontWeight: "600" },
   datePickerValue: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     fontWeight: "600",
     flex: 1,
     textAlign: "center",
@@ -1430,13 +1431,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   summaryCardLabel: {
-    fontSize: 11,
+    fontSize: getAdaptiveFontSize(11),
     fontWeight: "600",
     letterSpacing: 0.5,
     color: "#FFFFFF",
   },
   summaryCardValue: {
-    fontSize: 28,
+    fontSize: getAdaptiveFontSize(28),
     fontWeight: "800",
     color: "#FFFFFF",
     marginTop: 6,
@@ -1448,11 +1449,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 16,
   },
-  listTitle: { fontSize: 18, fontWeight: "700" },
-  listSubtitle: { fontSize: 12, fontWeight: "400" },
-  listCount: { fontSize: 13, fontWeight: "500" },
+  listTitle: { fontSize: getAdaptiveFontSize(18), fontWeight: "700" },
+  listSubtitle: { fontSize: getAdaptiveFontSize(12), fontWeight: "400" },
+  listCount: { fontSize: getAdaptiveFontSize(13), fontWeight: "500" },
   emptyList: { alignItems: "center", paddingVertical: 40, gap: 8 },
-  emptyText: { fontSize: 15 },
+  emptyText: { fontSize: getAdaptiveFontSize(15) },
   saleRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -1468,16 +1469,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  saleRowTitle: { fontSize: 14, fontWeight: "600" },
-  saleRowSub: { fontSize: 12, marginTop: 2 },
-  saleRowAmount: { fontSize: 15, fontWeight: "700" },
-  saleRowDate: { fontSize: 11, marginTop: 2 },
+  saleRowTitle: { fontSize: getAdaptiveFontSize(14), fontWeight: "600" },
+  saleRowSub: { fontSize: getAdaptiveFontSize(12), marginTop: 2 },
+  saleRowAmount: { fontSize: getAdaptiveFontSize(15), fontWeight: "700" },
+  saleRowDate: { fontSize: getAdaptiveFontSize(11), marginTop: 2 },
   sourceBadge: {
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
   },
-  sourceBadgeText: { fontSize: 9, fontWeight: "700" },
+  sourceBadgeText: { fontSize: getAdaptiveFontSize(9), fontWeight: "700" },
   addBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -1486,14 +1487,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 14,
   },
-  addBtnText: { fontSize: 14, fontWeight: "700", color: "#FFFFFF" },
+  addBtnText: { fontSize: getAdaptiveFontSize(14), fontWeight: "700", color: "#FFFFFF" },
   form: { borderRadius: 16, padding: 16, borderWidth: 1, gap: 10 },
   formHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  formTitle: { fontSize: 16, fontWeight: "700" },
+  formTitle: { fontSize: getAdaptiveFontSize(16), fontWeight: "700" },
   typeRow: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
   typeChip: {
     flexDirection: "row",
@@ -1503,12 +1504,12 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     borderRadius: 8,
   },
-  typeChipText: { fontSize: 11, fontWeight: "600" },
+  typeChipText: { fontSize: getAdaptiveFontSize(11), fontWeight: "600" },
   formInput: {
     borderRadius: 10,
     paddingHorizontal: 14,
     paddingVertical: 10,
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
   },
   submitBtn: {
     flexDirection: "row",
@@ -1519,7 +1520,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 4,
   },
-  submitBtnText: { fontSize: 14, fontWeight: "700", color: "#FFFFFF" },
+  submitBtnText: { fontSize: getAdaptiveFontSize(14), fontWeight: "700", color: "#FFFFFF" },
   expenseCard: {
     flexDirection: "row",
     alignItems: "center",
@@ -1538,7 +1539,7 @@ const styles = StyleSheet.create({
   expenseCardInfo: { flex: 1 },
   expenseCardActions: { flexDirection: 'row', gap: 8, alignItems: 'center' },
   expenseActionBtn: { padding: 4 },
-  expenseCardTitle: { fontSize: 14, fontWeight: "600", marginBottom: 2 },
-  expenseCardMeta: { fontSize: 11, lineHeight: 14 },
-  expenseCardAmount: { fontSize: 15, fontWeight: "700" },
+  expenseCardTitle: { fontSize: getAdaptiveFontSize(14), fontWeight: "600", marginBottom: 2 },
+  expenseCardMeta: { fontSize: getAdaptiveFontSize(11), lineHeight: 14 },
+  expenseCardAmount: { fontSize: getAdaptiveFontSize(15), fontWeight: "700" },
 });

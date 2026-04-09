@@ -13,6 +13,7 @@ import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAdaptiveFontSize } from '@/utils/scaling';
 
 const { width } = Dimensions.get('window');
 
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   skipText: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     fontWeight: '600',
     letterSpacing: 1,
     textTransform: 'uppercase',
@@ -217,14 +218,14 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   title: {
-    fontSize: 28,
+    fontSize: getAdaptiveFontSize(28),
     fontWeight: '800',
     textAlign: 'center',
     marginBottom: 8,
     letterSpacing: -0.5,
   },
   subtitle: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     fontWeight: '600',
     textAlign: 'center',
     marginBottom: 24,
@@ -232,7 +233,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   description: {
-    fontSize: 15,
+    fontSize: getAdaptiveFontSize(15),
     lineHeight: 24,
     textAlign: 'center',
     marginBottom: 40,
@@ -266,7 +267,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   ctaText: {
-    fontSize: 16,
+    fontSize: getAdaptiveFontSize(16),
     fontWeight: '700',
     color: '#fff',
     letterSpacing: 0.5,

@@ -11,6 +11,7 @@ import 'react-native-reanimated';
 import { DatabaseProvider, useDatabase } from '@/providers/DatabaseProvider';
 import { ToastProvider } from '@/providers/ToastProvider';
 import { useFarumaFont } from '@/hooks/use-font';
+import { getAdaptiveFontSize } from '@/utils/scaling';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -62,8 +63,8 @@ function AppContent() {
   if (error) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F8FAFC', padding: 24 }}>
-        <Text style={{ fontSize: 18, fontWeight: '700', color: '#F43F5E', marginBottom: 8 }}>Error</Text>
-        <Text style={{ fontSize: 14, color: '#535F70', textAlign: 'center' }}>{error}</Text>
+        <Text style={{ fontSize: getAdaptiveFontSize(18), fontWeight: '700', color: '#F43F5E', marginBottom: 8 }}>Error</Text>
+        <Text style={{ fontSize: getAdaptiveFontSize(14), color: '#535F70', textAlign: 'center' }}>{error}</Text>
       </View>
     );
   }

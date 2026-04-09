@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, ViewStyle } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { getAdaptiveFontSize } from '@/utils/scaling';
 
 interface TransactionItemProps {
   transaction: {
@@ -66,38 +67,47 @@ export function TransactionItem({ transaction, onPress, style }: TransactionItem
         >
           <MaterialIcons name={iconName as any} size={24} color={colors.primary} />
         </View>
-        <View style={{ flexShrink: 1 }}>
-          <Text numberOfLines={1} style={{ fontWeight: '700', color: colors.onSurface, fontSize: 14 }}>
+        <View style={{ flex: 1, flexShrink: 1 }}>
+          <Text numberOfLines={1} style={{ fontWeight: '700', color: colors.onSurface, fontSize: getAdaptiveFontSize(14) }}>
             {transaction.title}
           </Text>
-          <Text numberOfLines={1} style={{ fontSize: 12, color: colors.secondary, marginTop: 2 }}>
+          <Text numberOfLines={1} style={{ fontSize: getAdaptiveFontSize(12), color: colors.secondary, marginTop: 2 }}>
             {transaction.subtitle}
           </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 6 }}>
+            <Text
+              numberOfLines={1}
+              style={{
+                fontWeight: '700',
+                fontSize: getAdaptiveFontSize(14),
+                color: transaction.isExpense ? colors.tertiary : colors.primary,
+              }}
+            >
+              {formatAmount(transaction.amount, transaction.isExpense)}
+            </Text>
+            <View
+              style={{
+                backgroundColor: colors.primary,
+                paddingHorizontal: 10,
+                paddingVertical: 4,
+                borderRadius: 6,
+              }}
+            >
+              <Text
+                numberOfLines={1}
+                style={{
+                  fontSize: getAdaptiveFontSize(10),
+                  color: '#FFFFFF',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                  letterSpacing: 0.5,
+                }}
+              >
+                {transaction.status}
+              </Text>
+            </View>
+          </View>
         </View>
-      </View>
-      <View style={{ alignItems: 'flex-end', flexShrink: 0 }}>
-        <Text
-          numberOfLines={1}
-          style={{
-            fontWeight: '700',
-            fontSize: 14,
-            color: transaction.isExpense ? colors.tertiary : colors.primary,
-          }}
-        >
-          {formatAmount(transaction.amount, transaction.isExpense)}
-        </Text>
-        <Text
-          numberOfLines={1}
-          style={{
-            fontSize: 10,
-            color: colors.outline,
-            textTransform: 'uppercase',
-            letterSpacing: 0.5,
-            marginTop: 2,
-          }}
-        >
-          {transaction.status}
-        </Text>
       </View>
     </TouchableOpacity>
   );

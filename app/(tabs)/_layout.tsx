@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router';
 import React from 'react';
 import { TouchableOpacity, Platform, View, Text } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { getAdaptiveFontSize } from '@/utils/scaling';
 
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -36,7 +37,7 @@ export default function TabLayout() {
           marginBottom: Platform.OS === 'ios' ? 28 : 12,
         },
         tabBarLabelStyle: {
-          fontSize: 10,
+          fontSize: getAdaptiveFontSize(10),
           fontWeight: '600',
           marginTop: 4,
         },
@@ -105,7 +106,7 @@ export default function TabLayout() {
               >
                 {icon}
                 <Text style={{
-                  fontSize: 10,
+                  fontSize: getAdaptiveFontSize(10),
                   fontWeight: '600',
                   marginTop: 4,
                   color: isFocused ? '#FFFFFF' : colors.secondary,

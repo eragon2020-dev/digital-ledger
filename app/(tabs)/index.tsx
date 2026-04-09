@@ -15,6 +15,7 @@ import { useRouter } from "expo-router";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useTypography } from "@/hooks/use-typography";
 import { useDatabase } from "@/providers/DatabaseProvider";
 import { Card } from "@/components/Card";
 import { TransactionItem } from "@/components/TransactionItem";
@@ -29,10 +30,12 @@ import {
   BusinessRecord,
 } from "@/database/db";
 import { getProfitAnalytics } from "@/database/analytics";
+import { getAdaptiveFontSize } from "@/utils/scaling";
 
 export default function DashboardScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? "light"];
+  const typography = useTypography();
   const router = useRouter();
   const { isReady } = useDatabase();
 
@@ -306,7 +309,7 @@ export default function DashboardScreen() {
             <View
               style={[styles.capitalValueRow, styles.capitalValueDivider]}
             />
-            <View style={styles.capitalValueRow}>
+            <View style={styles.capitalValueColumn}>
               <Text
                 style={[
                   styles.capitalValueHint,
@@ -485,7 +488,7 @@ export default function DashboardScreen() {
                 }}
               >
                 <Text
-                  style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}
+                  style={{ fontSize: getAdaptiveFontSize(14), fontWeight: "600", color: "#FFFFFF" }}
                 >
                   Cancel
                 </Text>
@@ -500,7 +503,7 @@ export default function DashboardScreen() {
               >
                 <MaterialIcons name="check" size={18} color={colors.white} />
                 <Text
-                  style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}
+                  style={{ fontSize: getAdaptiveFontSize(14), fontWeight: "600", color: "#FFFFFF" }}
                 >
                   Create
                 </Text>
@@ -566,7 +569,7 @@ export default function DashboardScreen() {
                 }}
               >
                 <Text
-                  style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}
+                  style={{ fontSize: getAdaptiveFontSize(14), fontWeight: "600", color: "#FFFFFF" }}
                 >
                   Cancel
                 </Text>
@@ -582,7 +585,7 @@ export default function DashboardScreen() {
               >
                 <MaterialIcons name="delete" size={18} color={deleteInput === deleteTarget?.name ? colors.white : colors.secondary} />
                 <Text
-                  style={{ fontSize: 14, fontWeight: "600", color: deleteInput === deleteTarget?.name ? colors.white : colors.secondary }}
+                  style={{ fontSize: getAdaptiveFontSize(14), fontWeight: "600", color: deleteInput === deleteTarget?.name ? colors.white : colors.secondary }}
                 >
                   Delete
                 </Text>
@@ -686,7 +689,7 @@ export default function DashboardScreen() {
                 onPress={() => setShowCapitalEdit(false)}
               >
                 <Text
-                  style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}
+                  style={{ fontSize: getAdaptiveFontSize(14), fontWeight: "600", color: "#FFFFFF" }}
                 >
                   Cancel
                 </Text>
@@ -701,7 +704,7 @@ export default function DashboardScreen() {
               >
                 <MaterialIcons name="check" size={18} color={colors.white} />
                 <Text
-                  style={{ fontSize: 14, fontWeight: "600", color: "#FFFFFF" }}
+                  style={{ fontSize: getAdaptiveFontSize(14), fontWeight: "600", color: "#FFFFFF" }}
                 >
                   Save
                 </Text>
@@ -768,13 +771,13 @@ export default function DashboardScreen() {
       <View style={styles.activitySection}>
         <View style={styles.sectionHeader}>
           <Text
-            style={{ fontSize: 24, fontWeight: "800", color: colors.onSurface }}
+            style={{ fontSize: getAdaptiveFontSize(24), fontWeight: "800", color: colors.onSurface }}
           >
             Recent Activity
           </Text>
           <TouchableOpacity onPress={() => router.push("/sales" as any)}>
             <Text
-              style={{ fontWeight: "700", color: colors.primary, fontSize: 14 }}
+              style={{ fontWeight: "700", color: colors.primary, fontSize: getAdaptiveFontSize(14) }}
             >
               View All
             </Text>
@@ -783,7 +786,7 @@ export default function DashboardScreen() {
         <View style={styles.activityList}>
           {recentTransactions.length === 0 ? (
             <View style={styles.emptyActivity}>
-              <Text style={{ fontSize: 16, color: colors.secondary }}>
+              <Text style={{ fontSize: getAdaptiveFontSize(16), color: colors.secondary }}>
                 No activity yet
               </Text>
               <TouchableOpacity
@@ -796,7 +799,7 @@ export default function DashboardScreen() {
               >
                 <Text
                   style={{
-                    fontSize: 14,
+                    fontSize: getAdaptiveFontSize(14),
                     fontWeight: "600",
                     color: colors.white,
                   }}
@@ -837,7 +840,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   heroLabel: {
-    fontSize: 11,
+    fontSize: getAdaptiveFontSize(11),
     fontWeight: "500",
     color: "rgba(255,255,255,0.7)",
     textTransform: "uppercase",
@@ -845,7 +848,7 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   heroAmount: {
-    fontSize: 32,
+    fontSize: getAdaptiveFontSize(32),
     fontWeight: "800",
     color: "#FFFFFF",
     letterSpacing: -1,
@@ -861,7 +864,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
   },
   trendText: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     fontWeight: "600",
     color: "#FFFFFF",
   },
@@ -880,7 +883,7 @@ const styles = StyleSheet.create({
   },
   heroBtnText: {
     fontWeight: "700",
-    fontSize: 9,
+    fontSize: getAdaptiveFontSize(9),
     textAlign: "center",
   },
   heroDecoration: {
@@ -913,7 +916,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   businessNameText: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     fontWeight: "600",
     color: "rgba(255,255,255,0.8)",
     flex: 1,
@@ -934,7 +937,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   capitalLabel: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     fontWeight: "600",
     color: "rgba(255,255,255,0.7)",
   },
@@ -949,17 +952,22 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   capitalValueHint: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     fontWeight: "500",
     color: "rgba(255,255,255,0.6)",
   },
   capitalValueSmall: {
-    fontSize: 18,
+    fontSize: getAdaptiveFontSize(18),
     fontWeight: "700",
     color: "rgba(255,255,255,0.8)",
   },
+  capitalValueColumn: {
+    flexDirection: "column",
+    alignItems: "flex-end",
+    paddingVertical: 4,
+  },
   capitalValueMain: {
-    fontSize: 28,
+    fontSize: getAdaptiveFontSize(28),
     fontWeight: "800",
   },
   capitalValueDivider: {
@@ -969,7 +977,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   capitalHint: {
-    fontSize: 11,
+    fontSize: getAdaptiveFontSize(11),
     marginTop: 12,
     color: "rgba(255,255,255,0.5)",
   },
@@ -1012,7 +1020,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: getAdaptiveFontSize(20),
     fontWeight: "700",
   },
   businessItem: {
@@ -1031,7 +1039,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   businessItemName: {
-    fontSize: 16,
+    fontSize: getAdaptiveFontSize(16),
     fontWeight: "600",
     flex: 1,
   },
@@ -1049,7 +1057,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   addBusinessText: {
-    fontSize: 15,
+    fontSize: getAdaptiveFontSize(15),
     fontWeight: "600",
   },
   capitalEditForm: {
@@ -1059,12 +1067,12 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   capitalEditTitle: {
-    fontSize: 18,
+    fontSize: getAdaptiveFontSize(18),
     fontWeight: "700",
     textAlign: "center",
   },
   deleteWarningText: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     lineHeight: 20,
     textAlign: "center",
     marginBottom: 16,
@@ -1073,7 +1081,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    fontSize: 18,
+    fontSize: getAdaptiveFontSize(18),
     fontWeight: "600",
   },
   capitalEditActions: {
@@ -1106,15 +1114,15 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   statsCardTitle: {
-    fontSize: 18,
+    fontSize: getAdaptiveFontSize(18),
     fontWeight: "700",
   },
   statsCardValue: {
-    fontSize: 32,
+    fontSize: getAdaptiveFontSize(32),
     fontWeight: "800",
   },
   statsCardSub: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     marginTop: -4,
   },
   paymentBreakdown: {
@@ -1138,11 +1146,11 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   paymentLabel: {
-    fontSize: 11,
+    fontSize: getAdaptiveFontSize(11),
     fontWeight: "500",
   },
   paymentValue: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     fontWeight: "700",
   },
   activitySection: {

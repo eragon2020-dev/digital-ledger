@@ -12,6 +12,7 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import { getAdaptiveFontSize } from "@/utils/scaling";
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { StockStore } from '@/store/StockStore';
@@ -201,7 +202,7 @@ export default function SaleDetailScreen() {
   if (!sale) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background, paddingTop: 48 }]}>
-        <Text style={{ color: colors.secondary, fontSize: 16, textAlign: 'center' }}>
+        <Text style={{ color: colors.secondary, fontSize: getAdaptiveFontSize(16), textAlign: 'center' }}>
           Loading...
         </Text>
       </View>
@@ -276,7 +277,7 @@ export default function SaleDetailScreen() {
             const q = productSearch.toLowerCase();
             return p.name.toLowerCase().includes(q) || !productSearch;
           }).length === 0 ? (
-            <Text style={{ color: colors.secondary, fontSize: 14, textAlign: 'center', paddingVertical: 20 }}>
+            <Text style={{ color: colors.secondary, fontSize: getAdaptiveFontSize(14), textAlign: 'center', paddingVertical: 20 }}>
               No products found
             </Text>
           ) : (
@@ -576,13 +577,13 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: getAdaptiveFontSize(24),
     fontWeight: '800',
     color: '#FFFFFF',
     marginBottom: 4,
   },
   headerDate: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     color: 'rgba(255,255,255,0.7)',
   },
   closeBtn: {
@@ -603,7 +604,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: getAdaptiveFontSize(18),
     fontWeight: '700',
     marginBottom: 12,
   },
@@ -634,11 +635,11 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   editItemName: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     fontWeight: '600',
   },
   editItemTotal: {
-    fontSize: 16,
+    fontSize: getAdaptiveFontSize(16),
     fontWeight: '700',
   },
   quantityRow: {
@@ -654,7 +655,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   qtyText: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     fontWeight: '700',
     minWidth: 24,
     textAlign: 'center',
@@ -680,7 +681,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   paymentBtnText: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     fontWeight: '600',
   },
   summary: {
@@ -694,10 +695,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   summaryLabel: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
   },
   summaryValue: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     fontWeight: '600',
   },
   totalRow: {
@@ -706,11 +707,11 @@ const styles = StyleSheet.create({
     borderTopColor: 'rgba(0,0,0,0.1)',
   },
   totalLabel: {
-    fontSize: 18,
+    fontSize: getAdaptiveFontSize(18),
     fontWeight: '700',
   },
   totalValue: {
-    fontSize: 24,
+    fontSize: getAdaptiveFontSize(24),
     fontWeight: '800',
   },
   footer: {
@@ -732,17 +733,17 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   footerBtnText: {
-    fontSize: 16,
+    fontSize: getAdaptiveFontSize(16),
     fontWeight: '700',
   },
   taxSection: { marginTop: 12 },
   taxHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
-  taxRateText: { fontSize: 14, fontWeight: '700' },
+  taxRateText: { fontSize: getAdaptiveFontSize(14), fontWeight: '700' },
   taxRow: { flexDirection: 'row', gap: 8 },
   taxBtn: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  taxBtnText: { fontSize: 14, fontWeight: '700' },
+  taxBtnText: { fontSize: getAdaptiveFontSize(14), fontWeight: '700' },
   customTaxContainer: { marginTop: 8 },
-  customTaxInput: { borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: 14 },
+  customTaxInput: { borderRadius: 10, paddingHorizontal: 14, paddingVertical: 10, fontSize: getAdaptiveFontSize(14) },
   // Add Items Product Browser
   searchContainer: {
     flexDirection: 'row',
@@ -753,7 +754,7 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 12,
   },
-  searchInput: { flex: 1, fontSize: 16 },
+  searchInput: { flex: 1, fontSize: getAdaptiveFontSize(16) },
   horizontalScrollRow: {
     gap: 12,
     paddingRight: 16,
@@ -780,17 +781,17 @@ const styles = StyleSheet.create({
   },
   outOfStockText: {
     color: '#fff',
-    fontSize: 11,
+    fontSize: getAdaptiveFontSize(11),
     fontWeight: '700',
   },
   horizontalProductName: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     fontWeight: '600',
     marginTop: 4,
     textAlign: 'center',
   },
   horizontalProductPrice: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     fontWeight: '700',
     marginTop: 2,
   },
@@ -806,7 +807,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   horizontalInCartText: {
-    fontSize: 10,
+    fontSize: getAdaptiveFontSize(10),
     fontWeight: '700',
     color: '#FFFFFF',
   },
@@ -835,17 +836,17 @@ const styles = StyleSheet.create({
   },
   addProductInfo: { flex: 1 },
   addProductName: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     fontWeight: '600',
     marginBottom: 2,
   },
   addProductPrice: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     fontWeight: '700',
     marginBottom: 2,
   },
   addProductStock: {
-    fontSize: 11,
+    fontSize: getAdaptiveFontSize(11),
     fontWeight: '500',
   },
   addProductAction: {
@@ -862,7 +863,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   inCartBadgeText: {
-    fontSize: 12,
+    fontSize: getAdaptiveFontSize(12),
     fontWeight: '700',
     color: '#FFFFFF',
   },

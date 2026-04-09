@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Animated } from 'react-native
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { getAdaptiveFontSize } from '@/utils/scaling';
 
 interface ToastData {
   message: string;
@@ -108,7 +109,7 @@ const styles = StyleSheet.create({
   },
   toastMessage: {
     flex: 1,
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     fontWeight: '500',
     marginRight: 12,
   },
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
   },
   toastActionText: {
     color: '#FFFFFF',
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     fontWeight: '700',
   },
 });

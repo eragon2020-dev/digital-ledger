@@ -19,6 +19,7 @@ import {
   backupAndShare,
   pickAndRestore,
 } from '@/services/LocalBackupService';
+import { getAdaptiveFontSize } from '@/utils/scaling';
 
 export default function BackupScreen() {
   const colorScheme = useColorScheme();
@@ -269,11 +270,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   cardTitle: {
-    fontSize: 22,
+    fontSize: getAdaptiveFontSize(22),
     fontWeight: '700',
   },
   description: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     lineHeight: 20,
   },
   featureList: {
@@ -285,7 +286,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   featureText: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     fontWeight: '500',
     flex: 1,
   },
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: getAdaptiveFontSize(16),
     fontWeight: '600',
   },
   warningCard: {
@@ -312,7 +313,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   warningText: {
-    fontSize: 13,
+    fontSize: getAdaptiveFontSize(13),
     fontWeight: '600',
     flex: 1,
     lineHeight: 18,
@@ -322,11 +323,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   infoSectionTitle: {
-    fontSize: 15,
+    fontSize: getAdaptiveFontSize(15),
     fontWeight: '700',
   },
   infoText: {
-    fontSize: 14,
+    fontSize: getAdaptiveFontSize(14),
     lineHeight: 20,
   },
   loadingOverlay: {
@@ -347,7 +348,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   loadingText: {
-    fontSize: 16,
+    fontSize: getAdaptiveFontSize(16),
     fontWeight: '600',
   },
 });
