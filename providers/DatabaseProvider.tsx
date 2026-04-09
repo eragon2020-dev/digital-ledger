@@ -1,6 +1,8 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import * as FileSystemLegacy from 'expo-file-system/legacy';
 import { initDatabase } from '@/database/db';
+
+let _isInitialized = false;
 
 interface DatabaseContextType {
   isReady: boolean;
@@ -23,6 +25,12 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Prevent re-initialization if already done
+    if (_isInitialized) {
+      setIsReady(true);
+      return;
+    }
+
     async function setup() {
       try {
         // Check if a valid database exists (check both v3 and v4)
@@ -55,6 +63,7 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
           await initDatabase(true);
         }
         console.log('Database setup complete');
+        _isInitialized = true;
         setIsReady(true);
       } catch (err) {
         console.error('Database setup failed:', err);
@@ -67,6 +76,7 @@ export function DatabaseProvider({ children }: { children: React.ReactNode }) {
           } catch {}
           await initDatabase(true);
           console.log('Recovery complete');
+          _isInitialized = true;
           setIsReady(true);
         } catch (fallbackErr) {
           setError(fallbackErr instanceof Error ? fallbackErr.message : 'Failed to initialize database');

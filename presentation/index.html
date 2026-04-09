@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Ledger — App Presentation</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #0EA5E9;
+      --primary-dark: #0284C7;
+      --accent: #6366F1;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --danger: #F43F5E;
+      --bg: #0F172A;
+      --surface: #1E293B;
+      --text: #F1F5F9;
+      --text-secondary: #94A3B8;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── Navigation ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 16px 40px;
+      display: flex; justify-content: space-between; align-items: center;
+      transition: all 0.3s ease;
+    }
+    nav.scrolled { padding: 10px 40px; background: rgba(15, 23, 42, 0.95); }
+    .nav-logo { font-weight: 800; font-size: 20px; color: var(--primary); letter-spacing: -0.5px; }
+    .nav-logo span { color: var(--text-secondary); font-weight: 400; font-size: 14px; margin-left: 8px; }
+    .nav-dots { display: flex; gap: 8px; }
+    .nav-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: rgba(255,255,255,0.15); cursor: pointer;
+      transition: all 0.3s ease; border: none;
+    }
+    .nav-dot:hover, .nav-dot.active { background: var(--primary); transform: scale(1.3); }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 80px 24px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(14,165,233,0.15) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.2);
+      border-radius: 100px; padding: 8px 20px; font-size: 13px;
+      color: var(--primary); font-weight: 600; margin-bottom: 32px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--primary); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .hero h1 {
+      font-size: clamp(48px, 8vw, 96px); font-weight: 900;
+      letter-spacing: -3px; line-height: 1; margin-bottom: 24px;
+      background: linear-gradient(135deg, #fff 0%, var(--primary) 50%, var(--accent) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: clamp(18px, 2.5vw, 24px); color: var(--text-secondary);
+      max-width: 600px; margin-bottom: 48px; font-weight: 300;
+    }
+    .hero-icon {
+      width: 120px; height: 120px; border-radius: 32px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 56px; margin-bottom: 40px;
+      box-shadow: 0 20px 60px rgba(14,165,233,0.3);
+    }
+
+    /* ── Sections ── */
+    .section {
+      padding: 120px 24px; max-width: 1200px; margin: 0 auto;
+    }
+    .section-label {
+      font-size: 12px; font-weight: 700; color: var(--primary);
+      text-transform: uppercase; letter-spacing: 3px; margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(32px, 5vw, 56px); font-weight: 800;
+      letter-spacing: -2px; margin-bottom: 20px; line-height: 1.1;
+    }
+    .section-desc {
+      font-size: 18px; color: var(--text-secondary); max-width: 640px;
+      margin-bottom: 64px; font-weight: 300;
+    }
+
+    /* ── Screen Card ── */
+    .screen-card {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 80px; align-items: center; margin-bottom: 160px;
+    }
+    .screen-card.reverse { direction: rtl; }
+    .screen-card.reverse > * { direction: ltr; }
+    .screen-info h3 {
+      font-size: 36px; font-weight: 800; letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+    .screen-info p {
+      font-size: 16px; color: var(--text-secondary); margin-bottom: 32px;
+      line-height: 1.7;
+    }
+    .features { list-style: none; }
+    .features li {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 15px;
+    }
+    .features li::before {
+      content: '✓'; color: var(--success); font-weight: 700;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .screen-image {
+      position: relative; border-radius: 24px; overflow: hidden;
+      background: var(--surface);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05);
+      aspect-ratio: 9/19.5; max-width: 360px; margin: 0 auto;
+    }
+    .screen-image img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+    }
+    .screen-image::after {
+      content: ''; position: absolute; inset: 0;
+      border-radius: 24px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+      pointer-events: none;
+    }
+
+    /* ── Stats Grid ── */
+    .stats {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px; margin: 80px 0;
+    }
+    .stat {
+      background: var(--surface); border-radius: 16px; padding: 32px;
+      text-align: center; border: 1px solid rgba(255,255,255,0.05);
+    }
+    .stat-value { font-size: 48px; font-weight: 900; color: var(--primary); letter-spacing: -2px; }
+    .stat-label { font-size: 14px; color: var(--text-secondary); margin-top: 8px; }
+
+    /* ── Tech Stack ── */
+    .tech-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px; margin-top: 64px;
+    }
+    .tech-card {
+      background: var(--surface); border-radius: 16px; padding: 32px;
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: all 0.3s ease;
+    }
+    .tech-card:hover { border-color: var(--primary); transform: translateY(-4px); }
+    .tech-icon { font-size: 32px; margin-bottom: 16px; }
+    .tech-card h4 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .tech-card p { font-size: 14px; color: var(--text-secondary); }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center; padding: 80px 24px;
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+    footer p { color: var(--text-secondary); font-size: 14px; }
+    footer .dev { color: var(--primary); font-weight: 600; }
+
+    /* ── Animations ── */
+    .fade-up {
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .screen-card { grid-template-columns: 1fr; gap: 40px; margin-bottom: 100px; }
+      .screen-card.reverse { direction: ltr; }
+      .section { padding: 80px 20px; }
+      nav { padding: 12px 20px; }
+      .screen-image { max-width: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav id="nav">
+    <div class="nav-logo">Digital Ledger<span>App Presentation</span></div>
+    <div class="nav-dots">
+      <button class="nav-dot" onclick="scrollToSection('hero')" title="Home"></button>
+      <button class="nav-dot" onclick="scrollToSection('screens')" title="Screens"></button>
+      <button class="nav-dot" onclick="scrollToSection('tech')" title="Tech"></button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="hero-icon">📊</div>
+    <div class="hero-badge">React Native · Expo · SQLite</div>
+    <h1>Digital<br>Ledger</h1>
+    <p>Beyond the books — a complete Point of Sale, Inventory, and Finance tracker built for small businesses.</p>
+    <div class="stats">
+      <div class="stat"><div class="stat-value">5</div><div class="stat-label">Main Screens</div></div>
+      <div class="stat"><div class="stat-value">100%</div><div class="stat-label">Offline-First</div></div>
+      <div class="stat"><div class="stat-value">∞</div><div class="stat-label">Businesses</div></div>
+      <div class="stat"><div class="stat-value">MVR</div><div class="stat-label">Currency</div></div>
+    </div>
+  </section>
+
+  <!-- Screens -->
+  <section class="section" id="screens">
+    <div class="section-label fade-up">App Screens</div>
+    <div class="section-title fade-up">Every screen, designed<br>for speed & clarity</div>
+    <div class="section-desc fade-up">From onboarding to reports — every feature is built for real-world retail use.</div>
+
+    <!-- Sales Screen -->
+    <div class="screen-card fade-up">
+      <div class="screen-info">
+        <h3>💰 Sales History</h3>
+        <p>A paginated, filterable history of all recorded sales. View transaction details, share receipts as images, and manage sales with edit/delete actions.</p>
+        <ul class="features">
+          <li>Date range filtering (From → To)</li>
+          <li>Payment method chips: Cash, Transfer, Credit</li>
+          <li>Itemized sale details with subtotal/tax/total</li>
+          <li>Long-press to share receipt as PNG</li>
+          <li>Delete with stock restoration</li>
+          <li>Cursor-based pagination (50 per page)</li>
+        </ul>
+      </div>
+      <div class="screen-image">
+        <img src="assets/screenshots/02-sales.png" alt="Sales Screen" loading="lazy">
+      </div>
+    </div>
+
+    <!-- Finance Screen -->
+    <div class="screen-card reverse fade-up">
+      <div class="screen-info">
+        <h3>🏦 Finance Tracker</h3>
+        <p>Track all income and expenses — both automatic from sales and manual entries. Monitor cash flow with category-based expense tracking.</p>
+        <ul class="features">
+          <li>Income & Expenses tabs with monthly totals</li>
+          <li>Manual income entry (title + amount)</li>
+          <li>Expense categories: Stock, Rent, Utilities, Transport, Other</li>
+          <li>Edit/delete with undo via toast</li>
+          <li>Auto-recorded stock purchase costs</li>
+          <li>Server-side date filtering</li>
+        </ul>
+      </div>
+      <div class="screen-image">
+        <img src="assets/screenshots/03-finance.png" alt="Finance Screen" loading="lazy">
+      </div>
+    </div>
+
+    <!-- Inventory Screen -->
+    <div class="screen-card fade-up">
+      <div class="screen-info">
+        <h3>📦 Inventory Management</h3>
+        <p>Manage products and services with real-time stock tracking, pricing, and product images. Quick-adjust stock levels and protect products with sales history.</p>
+        <ul class="features">
+          <li>Inventory value at sell & buy prices</li>
+          <li>Debounced search with server-side LIKE query</li>
+          <li>Low-stock filter and warning badges</li>
+          <li>Quick +/- stock adjustment</li>
+          <li>Product image picker (1:1, 0.7 quality)</li>
+          <li>Services with infinity stock badge</li>
+          <li>Delete protection for products with sales history</li>
+        </ul>
+      </div>
+      <div class="screen-image">
+        <img src="assets/screenshots/04-inventory.png" alt="Inventory Screen" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section class="section" id="tech">
+    <div class="section-label fade-up">Technology</div>
+    <div class="section-title fade-up">Built with modern<br>tools & best practices</div>
+    <div class="section-desc fade-up">A performant, offline-first architecture using the React Native ecosystem.</div>
+
+    <div class="tech-grid">
+      <div class="tech-card fade-up">
+        <div class="tech-icon">⚛️</div>
+        <h4>React Native 0.81</h4>
+        <p>Latest RN with New Architecture enabled — Fabric renderer and TurboModules for native performance.</p>
+      </div>
+      <div class="tech-card fade-up">
+        <div class="tech-icon">🚀</div>
+        <h4>Expo SDK 54</h4>
+        <p>File-based routing with Expo Router, managed workflow, and prebuild for native module support.</p>
+      </div>
+      <div class="tech-card fade-up">
+        <div class="tech-icon">🗄️</div>
+        <h4>SQLite (expo-sqlite)</h4>
+        <p>Offline-first local database with WAL mode, PRAGMA optimizations, and cursor-based pagination.</p>
+      </div>
+      <div class="tech-card fade-up">
+        <div class="tech-icon">🎨</div>
+        <h4>React Native Reanimated 4</h4>
+        <p>Smooth 60fps animations powered by Reanimated worklets and the new JS runtime.</p>
+      </div>
+      <div class="tech-card fade-up">
+        <div class="tech-icon">📘</div>
+        <h4>TypeScript</h4>
+        <p>Full type safety across the entire codebase — from database queries to UI components.</p>
+      </div>
+      <div class="tech-card fade-up">
+        <div class="tech-icon">🧭</div>
+        <h4>Expo Router v6</h4>
+        <p>File-based navigation with nested tab stacks, modals, and deep linking support.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Overview -->
+  <section class="section">
+    <div class="section-label fade-up">Features</div>
+    <div class="section-title fade-up">Everything a small<br>business needs</div>
+    <div class="section-desc fade-up">No subscriptions, no cloud dependency — just a powerful app that works offline.</div>
+
+    <div class="tech-grid">
+      <div class="tech-card fade-up">
+        <div class="tech-icon">🧾</div>
+        <h4>Point of Sale</h4>
+        <p>Fast checkout with product grid, cart management, tax calculation, and multi-payment support.</p>
+      </div>
+      <div class="tech-card fade-up">
+        <div class="tech-icon">📊</div>
+        <h4>Smart Reports</h4>
+        <p>Monthly analytics with revenue trends, margin analysis, top-selling products, and yearly summaries.</p>
+      </div>
+      <div class="tech-card fade-up">
+        <div class="tech-icon">🧠</div>
+        <h4>Business Intelligence</h4>
+        <p>AI-powered insights: dead stock alerts, margin crash warnings, expense anomaly detection.</p>
+      </div>
+      <div class="tech-card fade-up">
+        <div class="tech-icon">💾</div>
+        <h4>Backup & Restore</h4>
+        <p>Export all data as ZIP files. Restore anytime. Switch between multiple businesses seamlessly.</p>
+      </div>
+      <div class="tech-card fade-up">
+        <div class="tech-icon">🏢</div>
+        <h4>Multi-Business</h4>
+        <p>Manage multiple businesses with separate data, capital tracking, and instant business switching.</p>
+      </div>
+      <div class="tech-card fade-up">
+        <div class="tech-icon">🔒</div>
+        <h4>Data Protection</h4>
+        <p>Products with sales history can't be deleted. Sale deletion restores stock. Full undo support.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>Built with ❤️ by <span class="dev">Ahmed Sunil</span></p>
+    <p style="margin-top: 8px; font-size: 12px;">Digital Ledger · Beyond the books</p>
+  </footer>
+
+  <script>
+    // Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // Nav scroll effect
+    window.addEventListener('scroll', () => {
+      document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // Scroll to section
+    function scrollToSection(id) {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Active nav dot
+    const sections = ['hero', 'screens', 'tech'];
+    const dots = document.querySelectorAll('.nav-dot');
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const idx = sections.indexOf(entry.target.id);
+        if (idx >= 0) {
+          dots.forEach(d => d.classList.remove('active'));
+          if (entry.isIntersecting) dots[idx]?.classList.add('active');
+        }
+      });
+    }, { threshold: 0.3 });
+
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) sectionObserver.observe(el);
+    });
+  </script>
+</body>
+</html>

@@ -8,7 +8,7 @@
     "scheme": "digitalledger",
     "description": "Beyond the books",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true
     },

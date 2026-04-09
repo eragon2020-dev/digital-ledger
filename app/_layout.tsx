@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack, Redirect } from 'expo-router';
+import { Stack, useRouter, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { View, Text } from 'react-native';
@@ -30,14 +30,22 @@ function AppContent() {
   const { isReady, error } = useDatabase();
   const fontLoaded = useFarumaFont();
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState<boolean | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    if (isReady && fontLoaded) {
+    if (isReady && fontLoaded && hasSeenOnboarding === null) {
       AsyncStorage.getItem('hasSeenOnboarding').then((value) => {
-        setHasSeenOnboarding(value === 'true');
+        const seen = value === 'true';
+        setHasSeenOnboarding(seen);
+        if (!seen && pathname !== '/onboarding') {
+          router.replace('/onboarding');
+        } else if (seen && pathname === '/onboarding') {
+          router.replace('/(tabs)');
+        }
       });
     }
-  }, [isReady, fontLoaded]);
+  }, [isReady, fontLoaded, hasSeenOnboarding]);
 
   const lightTheme = {
     ...DefaultTheme,
@@ -51,15 +59,6 @@ function AppContent() {
     },
   };
 
-  // Still loading onboarding state
-  if (!isReady || !fontLoaded || hasSeenOnboarding === null) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F8FAFC' }}>
-        <Text style={{ marginTop: 16, fontSize: 16, color: '#535F70' }}>Loading...</Text>
-      </View>
-    );
-  }
-
   if (error) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F8FAFC', padding: 24 }}>
@@ -67,11 +66,6 @@ function AppContent() {
         <Text style={{ fontSize: 14, color: '#535F70', textAlign: 'center' }}>{error}</Text>
       </View>
     );
-  }
-
-  // Redirect to onboarding if first-time user
-  if (!hasSeenOnboarding) {
-    return <Redirect href="/onboarding" />;
   }
 
   return (
